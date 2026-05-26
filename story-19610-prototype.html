@@ -201,9 +201,9 @@
   tr:hover td { background: #f7f9fc; }
   td input[type=checkbox] { accent-color: #1e3a6e; }
 
-  /* unmatched rows in beat-filter mode */
+  /* unmatched rows — muted by default, full colour when manually ticked */
   tr.unmatched td { color: #aab0bc; }
-  tr.unmatched input[type=checkbox] { opacity: 0.4; }
+  tr.unmatched.row-selected td { color: #2c3e50; }
 
   /* divider between matched / unmatched groups */
   tr.group-divider td {
@@ -565,6 +565,7 @@ function renderTable() {
     // Tick logic:
     // No beat filter  → ticked if date is selected
     // Beat filter     → ticked if matched AND date is selected
+    // Unmatched rows  → not auto-ticked but user can manually tick them
     const ticked = matched && selectedDates.has(o.date);
     if (ticked) tickedCount++;
 
@@ -572,7 +573,7 @@ function renderTable() {
     if (!matched) tr.classList.add('unmatched');
 
     tr.innerHTML = `
-      <td><input type="checkbox" class="row-cb" ${ticked ? 'checked' : ''} ${!matched ? 'disabled' : ''}></td>
+      <td><input type="checkbox" class="row-cb" ${ticked ? 'checked' : ''}></td>
       <td>${o.date}</td>
       <td>${o.retailer}</td>
       <td>${o.sales}</td>
@@ -583,20 +584,32 @@ function renderTable() {
       <td>${o.volWeight}</td>
     `;
     tbody.appendChild(tr);
+
+    // Unmatched rows: toggle full colour when user manually ticks
+    if (!matched) {
+      const cb = tr.querySelector('.row-cb');
+      cb.addEventListener('change', () => tr.classList.toggle('row-selected', cb.checked));
+    }
   });
 
   // Row count label
   const countEl = document.getElementById('rowCount');
   if (beatActive) {
-    countEl.textContent = `${matchedCount} order${matchedCount !== 1 ? 's' : ''} matched · ${tickedCount} ticked`;
+    countEl.textContent = `${matchedCount} order${matchedCount !== 1 ? 's' : ''} matched (at top) · ${allOrders.length - matchedCount} others selectable below`;
   } else {
     countEl.textContent = `${allOrders.length} orders shown · ${tickedCount} ticked`;
   }
 }
 
-// Select All checkbox in header — only ticks/unticks the matched (enabled) row checkboxes
+// Select All checkbox in header — ticks/unticks all row checkboxes including unmatched
 function masterRowToggle(masterCb) {
-  document.querySelectorAll('#tableBody .row-cb:not(:disabled)').forEach(cb => cb.checked = masterCb.checked);
+  document.querySelectorAll('#tableBody .row-cb').forEach(cb => {
+    cb.checked = masterCb.checked;
+    const tr = cb.closest('tr');
+    if (tr.classList.contains('unmatched')) {
+      tr.classList.toggle('row-selected', masterCb.checked);
+    }
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
