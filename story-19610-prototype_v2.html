@@ -158,7 +158,48 @@
   .select-all-wrap { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #444; cursor: pointer; }
   .select-all-wrap input { accent-color: #1e3a6e; }
 
-  .row-count { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .beat-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .beat-filter-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #5a6a85;
+    flex-shrink: 0;
+  }
+  .beat-pill {
+    background: #eef2ff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12.5px;
+    color: #1e3a6e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .beat-pill .x {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1;
+    color: #1e3a6e;
+  }
+  .beat-pill .x:hover { color: #e74c3c; }
+  .beat-clear-all {
+    font-size: 12.5px;
+    color: #e74c3c;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 4px;
+  }
+  .beat-clear-all:hover { color: #c0392b; }
 
   /* Table */
   .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e6ea; }
@@ -343,7 +384,7 @@
         </label>
       </div>
 
-      <div class="row-count" id="rowCount"></div>
+      <div class="beat-filter-bar" id="beatFilterBar" style="display:none"></div>
 
       <!-- Table -->
       <div class="table-wrap">
@@ -532,12 +573,6 @@ function renderTable() {
     tbody.appendChild(tr);
   });
 
-  const countEl = document.getElementById('rowCount');
-  if (beatActive) {
-    countEl.textContent = `${totalShown} order${totalShown !== 1 ? 's' : ''} matched · ${tickedCount} ticked`;
-  } else {
-    countEl.textContent = `${allOrders.length} orders shown · ${tickedCount} ticked`;
-  }
 }
 
 function masterRowToggle(masterCb) {
@@ -648,6 +683,46 @@ function updateBeatBadge() {
     badge.textContent   = appliedBeats.size;
   } else {
     badge.style.display = 'none';
+  }
+  renderBeatPills();
+}
+
+function renderBeatPills() {
+  const bar = document.getElementById('beatFilterBar');
+  bar.innerHTML = '';
+  if (appliedBeats.size === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+
+  const lbl = document.createElement('span');
+  lbl.className   = 'beat-filter-label';
+  lbl.textContent = 'Beat:';
+  bar.appendChild(lbl);
+
+  [...appliedBeats].sort().forEach(beat => {
+    const pill = document.createElement('span');
+    pill.className = 'beat-pill';
+    pill.innerHTML = `${beat} <span class="x" title="Remove filter">×</span>`;
+    pill.querySelector('.x').addEventListener('click', () => {
+      appliedBeats.delete(beat);
+      renderTable();
+      updateBeatBadge();
+    });
+    bar.appendChild(pill);
+  });
+
+  if (appliedBeats.size >= 2) {
+    const clearAll = document.createElement('span');
+    clearAll.className   = 'beat-clear-all';
+    clearAll.textContent = 'Clear all';
+    clearAll.addEventListener('click', () => {
+      appliedBeats = new Set();
+      renderTable();
+      updateBeatBadge();
+    });
+    bar.appendChild(clearAll);
   }
 }
 
