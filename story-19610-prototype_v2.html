@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>STORY 19610 – Delivery Planning Beat Filter Prototype</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 220px;
+    background: #1e3a6e;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .sidebar-logo {
+    padding: 16px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar nav { flex: 1; padding: 12px 0; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    color: rgba(255,255,255,0.65);
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #e2e6ea;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tab-group {
+    display: flex;
+    background: #f0f2f5;
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .tab {
+    padding: 6px 20px;
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .tab.active { background: #fff; color: #1e3a6e; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .back-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid #d0d5dd;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #444;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .field-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .field-label { font-size: 14px; font-weight: 600; color: #1a1a2e; min-width: 110px; }
+  .date-input {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: #1a1a2e;
+    cursor: pointer;
+    background: #fff;
+  }
+  .date-input svg { color: #1e3a6e; }
+
+  /* Order Dates */
+  .section-label { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; }
+  .date-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .date-chip {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .date-chip.selected { border-color: #1e3a6e; background: #eef2ff; color: #1e3a6e; }
+  .date-chip input[type=checkbox] { accent-color: #1e3a6e; }
+
+  .selected-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; min-height: 28px; }
+  .selected-tag {
+    background: #eef2ff;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12.5px;
+    color: #1e3a6e;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .selected-tag .x { cursor: pointer; font-size: 13px; color: #1e3a6e; font-weight: bold; }
+
+  /* Available Orders */
+  .orders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    margin-bottom: 10px;
+  }
+  .orders-title { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+  .select-all-wrap { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #444; cursor: pointer; }
+  .select-all-wrap input { accent-color: #1e3a6e; }
+
+  .row-count { font-size: 12px; color: #888; margin-bottom: 8px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e6ea; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: #f7f9fc; }
+  th {
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #5a6a85;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 1px solid #e2e6ea;
+    position: relative;
+  }
+  th .th-inner { display: flex; align-items: center; gap: 6px; }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f2f5;
+    color: #2c3e50;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f7f9fc; }
+  td input[type=checkbox] { accent-color: #1e3a6e; }
+
+  .beat-highlighted { color: #1e3a6e; font-weight: 700; }
+
+  /* Beat col */
+  .beat-col { position: relative; }
+  .filter-icon-btn {
+    background: none; border: none; cursor: pointer;
+    color: #1e3a6e;
+    display: flex; align-items: center;
+    padding: 2px 3px;
+    border-radius: 3px;
+    transition: background 0.12s;
+    flex-shrink: 0;
+  }
+  .filter-icon-btn:hover { background: #dce6f7; }
+  .filter-icon-btn.active { color: #fff; background: #1e3a6e; border-radius: 4px; }
+
+  .filter-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #e74c3c; color: #fff;
+    border-radius: 10px; font-size: 10px; font-weight: 700;
+    min-width: 16px; height: 16px; padding: 0 4px; line-height: 1;
+    flex-shrink: 0;
+  }
+
+  /* Beat dropdown */
+  .beat-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 300;
+    background: #fff;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+    width: 280px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: dropIn 0.15s ease;
+  }
+  .beat-dropdown.open { display: flex; }
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .dd-search-wrap { padding: 10px 12px 8px; border-bottom: 1px solid #f0f2f5; }
+  .dd-search {
+    width: 100%;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 6px;
+    padding: 7px 10px 7px 32px;
+    font-size: 13px;
+    outline: none;
+    background: #f7f9fc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 9px center;
+    transition: border-color 0.12s;
+  }
+  .dd-search:focus { border-color: #1e3a6e; background-color: #fff; }
+
+  .dd-list { max-height: 230px; overflow-y: auto; padding: 6px 0; }
+  .dd-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2c3e50;
+    transition: background 0.1s;
+  }
+  .dd-item:hover { background: #f0f4ff; }
+  .dd-item input[type=checkbox] { accent-color: #1e3a6e; width: 15px; height: 15px; flex-shrink: 0; }
+  .dd-item.dd-select-all { font-weight: 700; color: #1e3a6e; border-bottom: 1px solid #f0f2f5; text-transform: uppercase; font-size: 12px; letter-spacing: 0.03em; }
+  .dd-empty { padding: 16px 14px; font-size: 13px; color: #888; text-align: center; }
+
+  .dd-footer {
+    padding: 10px 12px;
+    border-top: 1px solid #f0f2f5;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .dd-count { font-size: 12px; color: #1e3a6e; font-weight: 600; }
+  .dd-actions { display: flex; gap: 8px; }
+  .btn-clear {
+    padding: 6px 14px; border-radius: 6px;
+    border: 1.5px solid #d0d5dd; background: #fff;
+    font-size: 12.5px; cursor: pointer; color: #444; transition: all 0.12s;
+  }
+  .btn-clear:hover { border-color: #1e3a6e; color: #1e3a6e; }
+  .btn-apply {
+    padding: 6px 16px; border-radius: 6px; border: none;
+    background: #1e3a6e; color: #fff;
+    font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.12s;
+  }
+  .btn-apply:hover { background: #16306a; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Logistics Buyer
+  </div>
+  <nav>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg> Orders</div>
+    <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="m16 8 5 5-5 5"/><path d="M10 16h7"/></svg> Delivery Planning</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg> Trips</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Reports</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Customers</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> Settings</div>
+  </nav>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <div class="tab-group">
+      <div class="tab active">3PL Logistics</div>
+      <div class="tab">Self Logistics</div>
+    </div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1e3a6e" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Create Delivery Route
+    </div>
+
+    <div class="card">
+      <!-- Delivery Date -->
+      <div class="field-row">
+        <span class="field-label">Delivery Date</span>
+        <div class="date-input">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a6e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          May 27th, 2026
+        </div>
+      </div>
+
+      <!-- Order Dates — unchecked on load, all orders always visible -->
+      <div class="section-label">Order Dates</div>
+      <div class="date-chips" id="dateChipsContainer"></div>
+      <div class="selected-tags" id="selectedTags"></div>
+
+      <!-- Available Orders -->
+      <div class="orders-header">
+        <span class="orders-title">Available Orders</span>
+        <label class="select-all-wrap">
+          <input type="checkbox" id="masterRowCb" onchange="masterRowToggle(this)"> Select All
+        </label>
+      </div>
+
+      <div class="row-count" id="rowCount"></div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px;"></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>ORDER DATE</div></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>RETAILER NAME</div></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>SALES PERSON</div></th>
+              <!-- Beat Name with filter -->
+              <th class="beat-col" id="beatColHeader">
+                <div class="th-inner">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7l1 9 1-4h5l1 4 1-9h7"/></svg>
+                  BEAT NAME
+                  <button class="filter-icon-btn" id="beatFilterBtn" title="Filter by Beat Name" onclick="toggleDropdown(event)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                  </button>
+                  <span class="filter-badge" id="beatBadge" style="display:none"></span>
+                </div>
+                <div class="beat-dropdown" id="beatDropdown">
+                  <div class="dd-search-wrap">
+                    <input class="dd-search" id="beatSearch" type="text" placeholder="Search beat name…" oninput="buildDropdownList(this.value)" />
+                  </div>
+                  <div class="dd-list" id="beatList"></div>
+                  <div class="dd-footer">
+                    <span class="dd-count" id="ddCount"></span>
+                    <div class="dd-actions">
+                      <button class="btn-clear" onclick="ddClear()">Clear</button>
+                      <button class="btn-apply" onclick="ddApply()">Apply</button>
+                    </div>
+                  </div>
+                </div>
+              </th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>REF ORDER NUMBER</div></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>INVOICE VALUE</div></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>TOTAL WEIGHT (KG)</div></th>
+              <th><div class="th-inner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>TOTAL VOL. WEIGHT (KG)</div></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const allOrders = [
+  { id:1,  date:'04-11-2026', retailer:'Modern Dept Store',   sales:'AMAN SINGH',   beat:'66 67 68 Kumbra IA-9 GR3', ref:'I/26-27/000802', invoice:'₹8,912.44',  weight:'180.00 Kgs', volWeight:'180.00 Kgs' },
+  { id:2,  date:'04-11-2026', retailer:'New Quality Traders', sales:'PRIYA SHARMA', beat:'66 67 68 Kumbra IA-9 GR3', ref:'I/26-27/000803', invoice:'₹5,430.00',  weight:'95.50 Kgs',  volWeight:'95.50 Kgs'  },
+  { id:3,  date:'20-3-2026',  retailer:'Sunrise Wholesale',   sales:'RAJAN MEHTA',  beat:'South Zone Beat 12',       ref:'I/26-27/000804', invoice:'₹12,800.00', weight:'240.00 Kgs', volWeight:'230.00 Kgs' },
+  { id:4,  date:'20-3-2026',  retailer:'Greenway Stores',     sales:'AMAN SINGH',   beat:'North Beat GR7',           ref:'I/26-27/000805', invoice:'₹3,250.50',  weight:'60.00 Kgs',  volWeight:'60.00 Kgs'  },
+  { id:5,  date:'20-3-2026',  retailer:'City Mart',           sales:'DIVYA NAIR',   beat:'66 67 68 Kumbra IA-9 GR3', ref:'I/26-27/000806', invoice:'₹7,100.00',  weight:'130.00 Kgs', volWeight:'128.00 Kgs' },
+  { id:6,  date:'20-3-2026',  retailer:'Horizon Retail',      sales:'PRIYA SHARMA', beat:'South Zone Beat 12',       ref:'I/26-27/000807', invoice:'₹9,460.00',  weight:'175.00 Kgs', volWeight:'170.00 Kgs' },
+  { id:7,  date:'20-3-2026',  retailer:'Metro Supplies',      sales:'RAJAN MEHTA',  beat:'East Beat Cluster A',      ref:'I/26-27/000808', invoice:'₹4,670.00',  weight:'88.00 Kgs',  volWeight:'88.00 Kgs'  },
+  { id:8,  date:'20-3-2026',  retailer:'Peak Distributors',   sales:'AMAN SINGH',   beat:'East Beat Cluster A',      ref:'I/26-27/000809', invoice:'₹15,300.00', weight:'300.00 Kgs', volWeight:'295.00 Kgs' },
+  { id:9,  date:'20-3-2026',  retailer:'Valley Merchants',    sales:'DIVYA NAIR',   beat:'North Beat GR7',           ref:'I/26-27/000810', invoice:'₹2,900.00',  weight:'45.00 Kgs',  volWeight:'45.00 Kgs'  },
+  { id:10, date:'20-3-2026',  retailer:'Apex Traders',        sales:'PRIYA SHARMA', beat:'West Corridor Beat 5',     ref:'I/26-27/000811', invoice:'₹6,750.00',  weight:'110.00 Kgs', volWeight:'108.00 Kgs' },
+  { id:11, date:'21-3-2026',  retailer:'Crown Wholesale',     sales:'RAJAN MEHTA',  beat:'West Corridor Beat 5',     ref:'I/26-27/000812', invoice:'₹18,400.00', weight:'350.00 Kgs', volWeight:'345.00 Kgs' },
+  { id:12, date:'21-3-2026',  retailer:'Bloom Retail Chain',  sales:'AMAN SINGH',   beat:'South Zone Beat 12',       ref:'I/26-27/000813', invoice:'₹11,200.00', weight:'210.00 Kgs', volWeight:'205.00 Kgs' },
+];
+
+const allDates = [...new Set(allOrders.map(o => o.date))];
+const allBeats = [...new Set(allOrders.map(o => o.beat))].sort();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// selectedDates  — which dates are ticked by user (drives row checkbox ticking)
+// appliedBeats   — active beat filter (empty = no filter)
+// pendingBeats   — inside dropdown before Apply is clicked
+//
+// TABLE ALWAYS SHOWS ALL ORDERS — no rows ever hidden.
+// Row checkbox ticked = date is selected (AND beat matches if filter active).
+// Beat filter: matched rows float to top, unmatched stay below.
+// ─────────────────────────────────────────────────────────────────────────────
+let selectedDates = new Set();          // none on load
+let appliedBeats  = new Set();          // none on load = no filter
+let pendingBeats  = new Set(allBeats);  // dropdown defaults: all checked
+let dropdownOpen  = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE CHIPS — built from data, all unchecked on load
+// ─────────────────────────────────────────────────────────────────────────────
+function buildDateChips() {
+  const container = document.getElementById('dateChipsContainer');
+  allDates.forEach(date => {
+    const label = document.createElement('label');
+    label.className   = 'date-chip';
+    label.dataset.date= date;
+
+    const cb = document.createElement('input');
+    cb.type  = 'checkbox';
+    cb.addEventListener('change', () => handleDateToggle(date, cb.checked, label));
+
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' ' + date));
+    container.appendChild(label);
+  });
+}
+
+function handleDateToggle(date, checked, labelEl) {
+  labelEl.classList.toggle('selected', checked);
+  if (checked) selectedDates.add(date);
+  else         selectedDates.delete(date);
+
+  // Tag row
+  const tags    = document.getElementById('selectedTags');
+  const existing = tags.querySelector(`[data-tag="${date}"]`);
+  if (checked && !existing) {
+    const tag = document.createElement('div');
+    tag.className   = 'selected-tag';
+    tag.dataset.tag = date;
+    tag.innerHTML   = `${date} <span class="x" onclick="removeDateTag('${date}')">×</span>`;
+    tags.appendChild(tag);
+  } else if (!checked && existing) {
+    existing.remove();
+  }
+
+  renderTable();
+}
+
+function removeDateTag(date) {
+  // Remove tag
+  document.getElementById('selectedTags').querySelector(`[data-tag="${date}"]`)?.remove();
+  selectedDates.delete(date);
+
+  // Uncheck the chip
+  const chip = document.querySelector(`.date-chip[data-date="${date}"]`);
+  if (chip) {
+    chip.querySelector('input').checked = false;
+    chip.classList.remove('selected');
+  }
+  renderTable();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLE RENDER
+//
+// No beat filter active:
+//   Show all orders in natural order.
+//   Row ticked = date is in selectedDates.
+//
+// Beat filter active:
+//   Show ONLY matched rows (filter = filter, no unmatched rows shown).
+//   Within matched rows: rows whose date is selected float to the top (ticked),
+//   rows whose date is not selected sit below (visible, unticked).
+// ─────────────────────────────────────────────────────────────────────────────
+function renderTable() {
+  const tbody      = document.getElementById('tableBody');
+  const beatActive = appliedBeats.size > 0;
+  tbody.innerHTML  = '';
+
+  let displayOrders;
+
+  if (!beatActive) {
+    displayOrders = allOrders.map(o => ({ order: o, matched: true }));
+  } else {
+    // Only matched rows in natural data order
+    const matched = allOrders.filter(o => appliedBeats.has(o.beat));
+    displayOrders = matched.map(o => ({ order: o, matched: true }));
+  }
+
+  let tickedCount  = 0;
+  const totalShown = displayOrders.length;
+
+  displayOrders.forEach(({ order: o }) => {
+    const ticked = selectedDates.has(o.date);
+    if (ticked) tickedCount++;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="checkbox" class="row-cb" ${ticked ? 'checked' : ''}></td>
+      <td>${o.date}</td>
+      <td>${o.retailer}</td>
+      <td>${o.sales}</td>
+      <td class="${beatActive ? 'beat-highlighted' : ''}">${o.beat}</td>
+      <td>${o.ref}</td>
+      <td>${o.invoice}</td>
+      <td>${o.weight}</td>
+      <td>${o.volWeight}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const countEl = document.getElementById('rowCount');
+  if (beatActive) {
+    countEl.textContent = `${totalShown} order${totalShown !== 1 ? 's' : ''} matched · ${tickedCount} ticked`;
+  } else {
+    countEl.textContent = `${allOrders.length} orders shown · ${tickedCount} ticked`;
+  }
+}
+
+function masterRowToggle(masterCb) {
+  document.querySelectorAll('#tableBody .row-cb').forEach(cb => cb.checked = masterCb.checked);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BEAT DROPDOWN
+// Opens with all beats checked by default (no filter state).
+// If a filter is active, opens reflecting that filter.
+// ─────────────────────────────────────────────────────────────────────────────
+function buildDropdownList(searchTerm) {
+  const list     = document.getElementById('beatList');
+  const filtered = allBeats.filter(b => b.toLowerCase().includes((searchTerm || '').toLowerCase()));
+  list.innerHTML = '';
+
+  const allChecked       = filtered.length > 0 && filtered.every(b => pendingBeats.has(b));
+  const someChecked      = filtered.some(b => pendingBeats.has(b));
+  const allIndeterminate = !allChecked && someChecked;
+
+  // Select All row
+  const saRow = document.createElement('div');
+  saRow.className = 'dd-item dd-select-all';
+  saRow.innerHTML = `<input type="checkbox" id="dd-all" ${allChecked ? 'checked' : ''}> Select All`;
+  const saCb = saRow.querySelector('input');
+  saCb.indeterminate = allIndeterminate;
+  saCb.addEventListener('change', () => {
+    if (saCb.checked) filtered.forEach(b => pendingBeats.add(b));
+    else              filtered.forEach(b => pendingBeats.delete(b));
+    buildDropdownList(document.getElementById('beatSearch').value);
+  });
+  list.appendChild(saRow);
+
+  if (filtered.length === 0) {
+    const empty = document.createElement('div');
+    empty.className   = 'dd-empty';
+    empty.textContent = 'No beats found';
+    list.appendChild(empty);
+  } else {
+    filtered.forEach(beat => {
+      const row = document.createElement('div');
+      row.className = 'dd-item';
+      row.innerHTML = `<input type="checkbox" ${pendingBeats.has(beat) ? 'checked' : ''}> ${beat}`;
+      const cb = row.querySelector('input');
+      cb.addEventListener('change', () => {
+        if (cb.checked) pendingBeats.add(beat);
+        else            pendingBeats.delete(beat);
+        buildDropdownList(document.getElementById('beatSearch').value);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  // Count
+  const cnt = pendingBeats.size;
+  document.getElementById('ddCount').textContent = cnt > 0 ? `${cnt} selected` : '';
+}
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  dropdownOpen = !dropdownOpen;
+  const dd  = document.getElementById('beatDropdown');
+  const btn = document.getElementById('beatFilterBtn');
+  if (dropdownOpen) {
+    // Open state: reflect current filter, or all-selected if no filter
+    pendingBeats = appliedBeats.size > 0 ? new Set(appliedBeats) : new Set(allBeats);
+    dd.classList.add('open');
+    btn.classList.add('active');
+    document.getElementById('beatSearch').value = '';
+    buildDropdownList('');
+    document.getElementById('beatSearch').focus();
+  } else {
+    closeDropdown();
+  }
+}
+
+function closeDropdown() {
+  dropdownOpen = false;
+  document.getElementById('beatDropdown').classList.remove('open');
+  document.getElementById('beatFilterBtn').classList.remove('active');
+}
+
+document.addEventListener('click', e => {
+  if (dropdownOpen && !document.getElementById('beatColHeader').contains(e.target)) closeDropdown();
+});
+
+// Clear = clear all active filters immediately, close dropdown
+function ddClear() {
+  pendingBeats  = new Set(allBeats);
+  appliedBeats  = new Set();
+  closeDropdown();
+  renderTable();
+  updateBeatBadge();
+}
+
+// Apply: if all beats selected → treat as no filter
+function ddApply() {
+  appliedBeats = pendingBeats.size === allBeats.length ? new Set() : new Set(pendingBeats);
+  closeDropdown();
+  renderTable();
+  updateBeatBadge();
+}
+
+function updateBeatBadge() {
+  const badge = document.getElementById('beatBadge');
+  if (appliedBeats.size > 0) {
+    badge.style.display = 'inline-flex';
+    badge.textContent   = appliedBeats.size;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT — clean slate
+// ─────────────────────────────────────────────────────────────────────────────
+function init() {
+  buildDateChips();   // all chips unchecked
+  renderTable();      // all orders visible, none ticked
+}
+
+init();
+</script>
+</body>
+</html>
