@@ -36,19 +36,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1
 .login-logo-name{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
 .login-title{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:4px;text-align:center}
 .login-sub{font-size:13px;color:var(--ink-3);margin-bottom:24px;text-align:center}
-.login-role-lbl{font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
-.login-roles{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.role-card{
-  display:flex;align-items:center;gap:12px;padding:12px 14px;
-  border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;
+.login-field-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.login-field{display:flex;flex-direction:column;gap:5px}
+.login-field-lbl{font-size:12px;font-weight:600;color:var(--ink-2)}
+.login-input{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-family:var(--font);font-size:14px;color:var(--ink);outline:none;
+  transition:border-color .15s;background:var(--surface);
 }
-.role-card:hover{border-color:var(--p-mid);background:var(--p-faint)}
-.role-card.selected{border-color:var(--p);background:var(--p-faint)}
-.role-card input[type=radio]{display:none}
-.role-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.role-info{flex:1}
-.role-name{font-size:13px;font-weight:600;color:var(--ink)}
-.role-desc{font-size:11px;color:var(--ink-3)}
+.login-input:focus{border-color:var(--p-mid)}
+.login-input::placeholder{color:#C4BAD4}
+.login-error{background:var(--error-bg);color:var(--error);font-size:13px;padding:8px 12px;border-radius:var(--r-sm);border:1px solid #FECACA}
 .login-btn{
   width:100%;padding:13px;background:var(--p);border:none;border-radius:var(--r);
   font-family:var(--font);font-size:14px;font-weight:600;color:#fff;cursor:pointer;transition:background .15s;
@@ -359,7 +357,26 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
 .start-visit-btn:hover{opacity:.9}
 .start-visit-btn svg{width:15px;height:15px}
 
-/* ── NOTES BOX ───────────────────────────── */
+/* ── SETTINGS TABS ───────────────────────────── */
+.settings-tab{padding:9px 16px;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ink-3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.settings-tab:hover{color:var(--ink)}
+.settings-tab.active{color:var(--p);border-bottom-color:var(--p)}
+.user-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:12px}
+.user-row:last-child{border-bottom:none}
+.user-row-avatar{width:32px;height:32px;border-radius:50%;background:var(--p-light);color:var(--p);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.user-row-info{flex:1;min-width:0}
+.user-row-name{font-size:13px;font-weight:500;color:var(--ink)}
+.user-row-email{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.user-row-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.tag-inactive{background:#F3F4F6;color:var(--ink-3);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.reset-pwd-btn{font-size:11px;font-weight:600;color:var(--p);background:var(--p-light);border:none;border-radius:5px;padding:4px 8px;cursor:pointer;font-family:var(--font)}
+.deactivate-btn{font-size:11px;font-weight:600;color:var(--error);background:var(--error-bg);border:none;border-radius:5px;padding:4px 8px;cursor:pointer;font-family:var(--font)}
+.activate-btn{font-size:11px;font-weight:600;color:var(--success);background:var(--success-bg);border:none;border-radius:5px;padding:4px 8px;cursor:pointer;font-family:var(--font)}
+.brand-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:10px}
+.brand-row:last-child{border-bottom:none}
+.brand-row-name{flex:1;font-size:13px;font-weight:500;color:var(--ink)}
+.brand-inactive-name{color:var(--ink-3);text-decoration:line-through}
+/* ── NOTES BOX ───────────────────────────────── */
 .notes-box{padding:12px 14px;font-size:13px;color:var(--ink-2);line-height:1.6;background:var(--bg);border-radius:0 0 var(--r) var(--r)}
 
 /* ── RESPONSIVE ──────────────────────────── */
@@ -388,29 +405,27 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
         <span class="login-logo-name">Qwipo</span>
       </div>
       <div class="login-title">Distributor CRM</div>
-      <div class="login-sub">Sign in to continue</div>
-      <div class="login-role-lbl">Sign in as</div>
-      <div class="login-roles" id="loginRoles">
-        <label class="role-card selected" id="rc-sales">
-          <input type="radio" name="loginRole" value="sales" checked onchange="selectRole(this)"/>
-          <div class="role-icon" style="background:#EDE9FE">🧑‍💼</div>
-          <div class="role-info">
-            <div class="role-name">Vendor Sales Rep</div>
-            <div class="role-desc">Add and update distributor visits</div>
+      <div class="login-sub">Sign in to your account</div>
+      <div class="login-field-wrap">
+        <div class="login-field">
+          <div class="login-field-lbl">Email address</div>
+          <input class="login-input" id="loginEmail" type="email" placeholder="you@qwipo.com" autocomplete="email"/>
+        </div>
+        <div class="login-field">
+          <div class="login-field-lbl">Password</div>
+          <div style="position:relative">
+            <input class="login-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+            <button onclick="togglePwd()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:13px" id="pwdToggle">Show</button>
           </div>
-        </label>
-        <label class="role-card" id="rc-manager">
-          <input type="radio" name="loginRole" value="manager" onchange="selectRole(this)"/>
-          <div class="role-icon" style="background:#ECFDF5">👔</div>
-          <div class="role-info">
-            <div class="role-name">Manager / Business Team</div>
-            <div class="role-desc">Dashboard, comments, edit history &amp; audit log</div>
-          </div>
-        </label>
-
+        </div>
+        <div class="login-error" id="loginError" style="display:none"></div>
       </div>
-      <button class="login-btn" onclick="doLogin()">Continue →</button>
-      <div class="login-note">⚡ Static login for prototype — no password required</div>
+      <button class="login-btn" onclick="doLogin()">Sign in →</button>
+      <div class="login-note">
+        <strong>Prototype credentials</strong><br/>
+        Sales Rep: priya@qwipo.com / sales123<br/>
+        Manager: rohan@qwipo.com / mgr123
+      </div>
     </div>
   </div>
 </div>
@@ -427,6 +442,7 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
     <div class="vsw" id="topVsw">
       <button class="vsw-btn active" id="vsw-dashboard" onclick="showView('dashboard')">Dashboard</button>
       <button class="vsw-btn" id="vsw-form" onclick="startNewVisit()">+ New Visit</button>
+      <button class="vsw-btn" id="vsw-settings" style="display:none" onclick="showView('settings')">⚙ Settings</button>
     </div>
     <div class="save-chip" id="saveChip" style="display:none">
       <div class="save-dot pulse" id="saveDot"></div><span id="saveText">Unsaved</span>
@@ -789,12 +805,88 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
   </div>
 </div>
 
+<!-- ═══════════════ SETTINGS VIEW ════════════ -->
+<div class="view" id="view-settings">
+  <div class="dash-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--p);margin-bottom:3px">Settings</div>
+        <div style="font-size:20px;font-weight:600;letter-spacing:-.02em">Manage Users &amp; Brands</div>
+      </div>
+    </div>
+    <!-- Settings tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <button class="settings-tab active" id="stab-users" onclick="switchSettingsTab('users')">👥 Users</button>
+      <button class="settings-tab" id="stab-brands" onclick="switchSettingsTab('brands')">🏷️ Brand Master</button>
+    </div>
+
+    <!-- USERS TAB -->
+    <div id="settings-users">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button class="add-btn" style="padding:8px 14px;font-size:13px" onclick="showAddUserForm()">+ Add user</button>
+      </div>
+      <!-- Add user inline form -->
+      <div class="card" id="addUserForm" style="display:none;margin-bottom:14px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--ink)">New user</div>
+        <div class="field-2">
+          <div class="field"><div class="flabel">Full name</div><input class="finput" id="nu-name" type="text" placeholder="e.g. Priya Nair"/></div>
+          <div class="field"><div class="flabel">Email address</div><input class="finput" id="nu-email" type="email" placeholder="priya@qwipo.com"/></div>
+        </div>
+        <div class="field">
+          <div class="flabel">Role</div>
+          <select class="finput" id="nu-role">
+            <option value="sales">Vendor Sales Rep</option>
+            <option value="manager">Manager / Business Team</option>
+          </select>
+        </div>
+        <div style="padding:10px 14px;display:flex;gap:8px">
+          <button class="comment-submit-btn" onclick="createUser()">Create user</button>
+          <button class="comment-cancel-btn" onclick="document.getElementById('addUserForm').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <!-- Temp password reveal -->
+      <div class="card" id="tempPwdReveal" style="display:none;margin-bottom:14px;background:var(--success-bg);border-color:var(--success-border)">
+        <div style="padding:14px 16px;display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:20px">🔑</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--success);margin-bottom:4px">User created — share this temporary password</div>
+            <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--ink);letter-spacing:.1em;margin-bottom:6px" id="tempPwdValue">—</div>
+            <div style="font-size:12px;color:var(--ink-3)">The user will be asked to change this on first login. This is shown only once.</div>
+            <button onclick="document.getElementById('tempPwdReveal').style.display='none'" style="margin-top:8px;font-size:12px;color:var(--success);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:600">✓ Got it, close</button>
+          </div>
+        </div>
+      </div>
+      <!-- Users table -->
+      <div class="table-wrap" id="usersTable"></div>
+    </div>
+
+    <!-- BRANDS TAB -->
+    <div id="settings-brands" style="display:none">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button class="add-btn" style="padding:8px 14px;font-size:13px" onclick="showAddBrandForm()">+ Add brand</button>
+      </div>
+      <div class="card" id="addBrandForm" style="display:none;margin-bottom:14px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--ink)">New brand</div>
+        <div class="field">
+          <div class="flabel">Brand name</div>
+          <input class="finput" id="nb-name" type="text" placeholder="e.g. Dabur"/>
+        </div>
+        <div style="padding:10px 14px;display:flex;gap:8px">
+          <button class="comment-submit-btn" onclick="createBrand()">Add brand</button>
+          <button class="comment-cancel-btn" onclick="document.getElementById('addBrandForm').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="brandsTable"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════ JAVASCRIPT ════════════════ -->
 <script>
-/* ── STATIC USERS ─────────────────────────────── */
-const USERS = {
-  sales: { name:'Priya Nair', role:'Vendor Sales Rep', short:'sales', avatar:'PN' },
-  manager: { name:'Rohan Menon', role:'Manager', short:'manager', avatar:'RM' }
+/* ── STATIC USERS (🔌 swap with POST /api/auth/login) ── */
+const STATIC_CREDENTIALS = {
+  'priya@qwipo.com':  { password:'sales123',  user:{ name:'Priya Nair',  role:'Vendor Sales Rep', short:'sales',   avatar:'PN' } },
+  'rohan@qwipo.com':  { password:'mgr123',    user:{ name:'Rohan Menon', role:'Manager',           short:'manager', avatar:'RM' } },
 };
 let currentUser = null;
 
@@ -808,6 +900,17 @@ let currentUser = null;
 const DB_KEY='qwipo_distributors';
 const VISIT_KEY='qwipo_visits';
 const AUDIT_KEY='qwipo_audit';
+const BRAND_KEY='qwipo_brands';
+const USER_KEY='qwipo_users';
+
+/* ── BRAND MASTER STORAGE (🔌 GET /api/brands) ── */
+function getBrands(){ try{return JSON.parse(localStorage.getItem(BRAND_KEY)||'[]')}catch{return[]} }
+function saveBrandMaster(brands){ localStorage.setItem(BRAND_KEY,JSON.stringify(brands)) }
+function getActiveBrands(){ return getBrands().filter(b=>b.active) }
+
+/* ── USER STORAGE (🔌 GET /api/users) ── */
+function getUsers(){ try{return JSON.parse(localStorage.getItem(USER_KEY)||'[]')}catch{return[]} }
+function saveUsers(users){ localStorage.setItem(USER_KEY,JSON.stringify(users)) }
 
 function getAll(){ try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]')}catch{return[]} }
 function saveRecord(rec, auditFields){
@@ -845,52 +948,85 @@ function saveVisit(visit){
 function seedIfEmpty(){
   if(getAll().length>0) return;
   const dists=[
-    {id:'D001',name:'Raj Distributors',phone:'+91 94471 00123',area:'Kottayam North',lat:'9.5916',lng:'76.5222',categories:['FMCG','Grocery'],dms:'Bizom',billing:'Tally',trucks:'4',radius:'30',dailyOrders:'45',minOrder:'500',nonbeat:'yes',activeOutlets:'120',wholesaleOutlets:'8',monthlyBiz:'18,00,000',brands:[{name:'Britannia',revenue:'600000',margin:'8',sp:'2'},{name:'Parle',revenue:'400000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94471 00124',digi:'yes',createdAt:'2025-05-20T10:30:00Z'},
-    {id:'D002',name:'Kerala Agro Traders',phone:'+91 94472 00456',area:'Changanacherry',lat:'9.4420',lng:'76.5361',categories:['Grocery','Oil','Staples'],dms:'Marg ERP',billing:'Busy',trucks:'2',radius:'20',dailyOrders:'30',minOrder:'1000',nonbeat:'no',activeOutlets:'65',wholesaleOutlets:'3',monthlyBiz:'9,50,000',brands:[{name:'Adani Wilmar (Fortune)',revenue:'300000',margin:'5',sp:'1'},{name:'Aashirvaad (ITC)',revenue:'250000',margin:'6',sp:'1'}],multibrand:'no',salesResp:'Self',salaryResp:'Self',spPhone:'+91 94472 00457',digi:'no',createdAt:'2025-05-22T14:00:00Z'},
-    {id:'D003',name:'Metro FMCG Hub',phone:'+91 94473 00789',area:'Ernakulam Central',lat:'9.9312',lng:'76.2673',categories:['FMCG','Beverages','Personal Care'],dms:'Distiman',billing:'Tally',trucks:'6',radius:'50',dailyOrders:'80',minOrder:'0',nonbeat:'yes',activeOutlets:'210',wholesaleOutlets:'15',monthlyBiz:'32,00,000',brands:[{name:'HUL (Hindustan Unilever)',revenue:'1200000',margin:'9',sp:'4'},{name:'ITC',revenue:'800000',margin:'8',sp:'2'},{name:'Nestlé',revenue:'500000',margin:'10',sp:'1'}],multibrand:'no',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94473 00790',digi:'yes',createdAt:'2025-05-25T09:15:00Z'},
-    {id:'D004',name:'South Star Supplies',phone:'+91 94474 00321',area:'Thrissur South',lat:'10.5276',lng:'76.2144',categories:['FMCG','Oil'],dms:'',billing:'Vyapar',trucks:'3',radius:'25',dailyOrders:'35',minOrder:'750',nonbeat:'no',activeOutlets:'88',wholesaleOutlets:'5',monthlyBiz:'12,00,000',brands:[{name:'Colgate-Palmolive',revenue:'450000',margin:'11',sp:'2'}],multibrand:'yes',salesResp:'Both',salaryResp:'Both',spPhone:'+91 94474 00322',digi:'yes',createdAt:'2025-05-28T11:00:00Z'},
-    {id:'D005',name:'Palakkad Provisions',phone:'+91 94475 00654',area:'Palakkad Town',lat:'10.7867',lng:'76.6548',categories:['Grocery','Staples'],dms:'',billing:'Tally',trucks:'1',radius:'15',dailyOrders:'20',minOrder:'500',nonbeat:'no',activeOutlets:'42',wholesaleOutlets:'2',monthlyBiz:'4,50,000',brands:[{name:'MTR Foods',revenue:'180000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Self',salaryResp:'Self',spPhone:'',digi:'no',createdAt:'2025-06-01T08:30:00Z'},
+    {id:'D001',name:'Raj Distributors',phone:'+91 94471 00123',area:'Kottayam North',lat:'9.5916',lng:'76.5222',categories:['FMCG','Grocery'],dms:'Bizom',billing:'Tally',trucks:'4',radius:'30',dailyOrders:'45',minOrder:'500',nonbeat:'yes',activeOutlets:'120',wholesaleOutlets:'8',monthlyBiz:1800000,brands:[{name:'Britannia',revenue:'600000',margin:'8',sp:'2'},{name:'Parle',revenue:'400000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94471 00124',digi:'yes',createdAt:'2025-05-20T10:30:00Z'},
+    {id:'D002',name:'Kerala Agro Traders',phone:'+91 94472 00456',area:'Changanacherry',lat:'9.4420',lng:'76.5361',categories:['Grocery','Oil','Staples'],dms:'Marg ERP',billing:'Busy',trucks:'2',radius:'20',dailyOrders:'30',minOrder:'1000',nonbeat:'no',activeOutlets:'65',wholesaleOutlets:'3',monthlyBiz:950000,brands:[{name:'Adani Wilmar (Fortune)',revenue:'300000',margin:'5',sp:'1'},{name:'Aashirvaad (ITC)',revenue:'250000',margin:'6',sp:'1'}],multibrand:'no',salesResp:'Self',salaryResp:'Self',spPhone:'+91 94472 00457',digi:'no',createdAt:'2025-05-22T14:00:00Z'},
+    {id:'D003',name:'Metro FMCG Hub',phone:'+91 94473 00789',area:'Ernakulam Central',lat:'9.9312',lng:'76.2673',categories:['FMCG','Beverages','Personal Care'],dms:'Distiman',billing:'Tally',trucks:'6',radius:'50',dailyOrders:'80',minOrder:'0',nonbeat:'yes',activeOutlets:'210',wholesaleOutlets:'15',monthlyBiz:3200000,brands:[{name:'HUL (Hindustan Unilever)',revenue:'1200000',margin:'9',sp:'4'},{name:'ITC',revenue:'800000',margin:'8',sp:'2'},{name:'Nestlé',revenue:'500000',margin:'10',sp:'1'}],multibrand:'no',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94473 00790',digi:'yes',createdAt:'2025-05-25T09:15:00Z'},
+    {id:'D004',name:'South Star Supplies',phone:'+91 94474 00321',area:'Thrissur South',lat:'10.5276',lng:'76.2144',categories:['FMCG','Oil'],dms:'',billing:'Vyapar',trucks:'3',radius:'25',dailyOrders:'35',minOrder:'750',nonbeat:'no',activeOutlets:'88',wholesaleOutlets:'5',monthlyBiz:1200000,brands:[{name:'Colgate-Palmolive',revenue:'450000',margin:'11',sp:'2'}],multibrand:'yes',salesResp:'Both',salaryResp:'Both',spPhone:'+91 94474 00322',digi:'yes',createdAt:'2025-05-28T11:00:00Z'},
+    {id:'D005',name:'Palakkad Provisions',phone:'+91 94475 00654',area:'Palakkad Town',lat:'10.7867',lng:'76.6548',categories:['Grocery','Staples'],dms:'',billing:'Tally',trucks:'1',radius:'15',dailyOrders:'20',minOrder:'500',nonbeat:'no',activeOutlets:'42',wholesaleOutlets:'2',monthlyBiz:450000,brands:[{name:'MTR Foods',revenue:'180000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Self',salaryResp:'Self',spPhone:'',digi:'no',createdAt:'2025-06-01T08:30:00Z'},
   ];
   dists.forEach(saveRecord);
   const visits=[
-    {id:'V001',distId:'D001',date:'2025-05-20',startTime:'10:30',endTime:'11:45',lat:'9.5916',lng:'76.5222',status:'Interested',notes:'Very interested in DigiDukaan. Wants a demo. Has 120 active outlets — good reach.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-20T10:30:00Z',comments:[{id:'C001',by:'Rohan Menon',role:'Manager',text:'Good lead. Schedule a demo this week.',ts:'2025-05-20T15:00:00Z'}]},
+    {id:'V001',distId:'D001',date:'2025-05-20',startTime:'10:30',lat:'9.5916',lng:'76.5222',status:'Interested',notes:'Very interested in DigiDukaan. Wants a demo. Has 120 active outlets — good reach.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-20T10:30:00Z',comments:[{id:'C001',by:'Rohan Menon',role:'Manager',text:'Good lead. Schedule a demo this week.',ts:'2025-05-20T15:00:00Z'}]},
     {id:'V002',distId:'D001',date:'2025-06-01',startTime:'14:00',lat:'9.5918',lng:'76.5224',status:'Follow-up',notes:'Discussed pricing and onboarding terms. Owner wants 60-day credit period. Follow up needed.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-01T14:00:00Z',comments:[]},
-    {id:'V003',distId:'D002',date:'2025-05-22',startTime:'11:00',endTime:'12:00',lat:'9.4420',lng:'76.5361',status:'Rejected',notes:'Owner not interested in digital tools. Prefers manual billing. Revisit in 6 months.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-22T11:00:00Z',comments:[{id:'C002',by:'Rohan Menon',role:'Manager',text:'Note this as cold. Move on for now.',ts:'2025-05-22T16:00:00Z'}]},
-    {id:'V004',distId:'D003',date:'2025-05-25',startTime:'09:15',endTime:'10:30',lat:'9.9312',lng:'76.2673',status:'Interested',notes:'Large operation. Decision maker is Mr. Suresh (owner). Very open to DigiDukaan.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-25T09:15:00Z',comments:[]},
-    {id:'V005',distId:'D003',date:'2025-06-02',startTime:'10:00',endTime:'11:00',lat:'9.9315',lng:'76.2675',status:'Closed',notes:'Signed onboarding agreement. Mr. Suresh agreed to DigiDukaan pilot with HUL SKUs.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-02T10:00:00Z',comments:[{id:'C003',by:'Rohan Menon',role:'Manager',text:'Excellent! Initiate seller portal setup.',ts:'2025-06-02T13:00:00Z'}]},
+    {id:'V003',distId:'D002',date:'2025-05-22',startTime:'11:00',lat:'9.4420',lng:'76.5361',status:'Rejected',notes:'Owner not interested in digital tools. Prefers manual billing. Revisit in 6 months.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-22T11:00:00Z',comments:[{id:'C002',by:'Rohan Menon',role:'Manager',text:'Note this as cold. Move on for now.',ts:'2025-05-22T16:00:00Z'}]},
+    {id:'V004',distId:'D003',date:'2025-05-25',startTime:'09:15',lat:'9.9312',lng:'76.2673',status:'Interested',notes:'Large operation. Decision maker is Mr. Suresh (owner). Very open to DigiDukaan.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-25T09:15:00Z',comments:[]},
+    {id:'V005',distId:'D003',date:'2025-06-02',startTime:'10:00',lat:'9.9315',lng:'76.2675',status:'Closed',notes:'Signed onboarding agreement. Mr. Suresh agreed to DigiDukaan pilot with HUL SKUs.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-02T10:00:00Z',comments:[{id:'C003',by:'Rohan Menon',role:'Manager',text:'Excellent! Initiate seller portal setup.',ts:'2025-06-02T13:00:00Z'}]},
   ];
   visits.forEach(saveVisit);
-  // seed audit log (visible to Admin)
+  // seed audit log
   const auditSeed=[
     {id:'A001',distId:'D001',field:'digi',from:'no',to:'yes',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-01T14:30:00Z'},
-    {id:'A002',distId:'D001',field:'monthlyBiz',from:'15,00,000',to:'18,00,000',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-01T14:32:00Z'},
+    {id:'A002',distId:'D001',field:'monthlyBiz',from:'1500000',to:'1800000',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-01T14:32:00Z'},
     {id:'A003',distId:'D003',field:'trucks',from:'4',to:'6',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-02T10:15:00Z'},
     {id:'A004',distId:'D003',field:'activeOutlets',from:'180',to:'210',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-02T10:16:00Z'},
     {id:'A005',distId:'D004',field:'area',from:'Thrissur',to:'Thrissur South',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-05-29T09:00:00Z'},
   ];
   const existing=JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]');
   localStorage.setItem(AUDIT_KEY,JSON.stringify([...auditSeed,...existing]));
+  // seed brand master
+  if(!getBrands().length){
+    const SEED_BRANDS=['HUL (Hindustan Unilever)','ITC','Nestlé','Britannia','Parle','Dabur','Marico','Godrej Consumer Products','Emami','Colgate-Palmolive','P&G','Reckitt','Amul','Mother Dairy',"Haldiram's",'Bikaji Foods','Adani Wilmar (Fortune)','Patanjali','CavinKare','Jyothy Labs','Nirma','Perfetti Van Melle','Mondelez (Cadbury)','Red Bull','Coca-Cola India','PepsiCo India','Tata Consumer Products','MTR Foods','Eastern Condiments','Catch Spices','Everest Spices','MDH Spices','Sunfeast (ITC)','Bingo (ITC)','Maggi (Nestlé)','Surf Excel (HUL)','Vim (HUL)','Lifebuoy (HUL)','Dove (HUL)','Parachute (Marico)','Saffola (Marico)','Real (Dabur)','Vatika (Dabur)','Aashirvaad (ITC)','Ujala (Jyothy)','Chik (CavinKare)','Meera (CavinKare)','Exo (CavinKare)'];
+    saveBrandMaster(SEED_BRANDS.map((name,i)=>({id:'B'+(i+1).toString().padStart(3,'0'),name,active:true})));
+  }
+  // seed users list (what manager sees in Settings)
+  if(!getUsers().length){
+    saveUsers([
+      {id:'U001',name:'Priya Nair',email:'priya@qwipo.com',role:'sales',active:true,lastLogin:'2025-06-04T08:00:00Z'},
+      {id:'U002',name:'Rohan Menon',email:'rohan@qwipo.com',role:'manager',active:true,lastLogin:'2025-06-04T09:00:00Z'},
+    ]);
+  }
 }
 
 /* ── LOGIN ─────────────────────────────────────── */
-function selectRole(radio){
-  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
-  radio.closest('.role-card').classList.add('selected');
+function togglePwd(){
+  const inp=document.getElementById('loginPassword');
+  const btn=document.getElementById('pwdToggle');
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'Show':'Hide';
 }
 function doLogin(){
-  const role=document.querySelector('input[name="loginRole"]:checked')?.value||'sales';
-  currentUser=USERS[role];
+  const email=(document.getElementById('loginEmail')?.value||'').trim().toLowerCase();
+  const password=document.getElementById('loginPassword')?.value||'';
+  const errEl=document.getElementById('loginError');
+  const match=STATIC_CREDENTIALS[email];
+  if(!match||match.password!==password){
+    errEl.textContent='Incorrect email or password. Try again.';
+    errEl.style.display='block';
+    document.getElementById('loginPassword').value='';
+    return;
+  }
+  errEl.style.display='none';
+  currentUser=match.user;
   document.getElementById('mainTopbar').style.display='flex';
   document.getElementById('userName').textContent=currentUser.name;
   document.getElementById('userAvatar').textContent=currentUser.avatar;
   document.getElementById('userRoleBadge').textContent=currentUser.role;
-  // hide form tab for non-sales
-  if(role!=='sales') document.getElementById('vsw-form').style.display='none';
+  // show Settings tab for manager only; hide +New Visit for non-sales
+  if(currentUser.short==='manager'){
+    document.getElementById('vsw-settings').style.display='block';
+    document.getElementById('vsw-form').style.display='none';
+  }
   showView('dashboard');
 }
 function doLogout(){
   currentUser=null;
   document.getElementById('mainTopbar').style.display='none';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+  document.getElementById('loginError').style.display='none';
+  // reset topbar tabs
+  document.getElementById('vsw-settings').style.display='none';
+  document.getElementById('vsw-form').style.display='block';
   showView('login');
 }
 
@@ -901,12 +1037,12 @@ function showView(name){
   document.querySelectorAll('.vsw-btn').forEach(b=>b.classList.remove('active'));
   const vsw=document.getElementById('vsw-'+name); if(vsw)vsw.classList.add('active');
   document.getElementById('saveChip').style.display=name==='form'?'flex':'none';
-  // hide the +New Visit tab while inside the form (you're already in it)
   const newVisitBtn=document.getElementById('vsw-form');
   if(newVisitBtn && currentUser?.short==='sales'){
     newVisitBtn.style.display = name==='form' ? 'none' : 'block';
   }
-  if(name==='dashboard')renderDashboard();
+  if(name==='dashboard') renderDashboard();
+  if(name==='settings') renderSettings();
   window.scrollTo(0,0);
 }
 
@@ -1021,6 +1157,11 @@ function captureGPS(){
 function showGpsAlert(id,type,msg){ const el=document.getElementById(id); if(!el)return; el.textContent=msg; el.className='gps-alert '+type; }
 
 /* ── BRAND TABLE ───────────────────────────────── */
+function refreshBrandDatalist(){
+  const dl=document.getElementById('brandList');
+  if(!dl) return;
+  dl.innerHTML=getActiveBrands().map(b=>`<option value="${b.name}"/>`).join('');
+}
 function addBrandRow(data){
   const id=brandRowId++;
   const tr=document.createElement('tr'); tr.id='brow-'+id;
@@ -1052,7 +1193,8 @@ function collectForm(){
     lat:v('f-lat'),lng:v('f-lng'),categories:cats,dms:v('f-dms'),billing:v('f-billing'),
     trucks:v('f-trucks'),radius:v('f-radius'),dailyOrders:v('f-daily-orders'),minOrder:v('f-min-order'),
     nonbeat:ynState.nonbeat||'',activeOutlets:v('f-active-outlets'),wholesaleOutlets:v('f-wholesale-outlets'),
-    monthlyBiz:v('f-monthly-biz'),brands:getBrandData(),multibrand:ynState.multibrand||'',
+    monthlyBiz: v('f-monthly-biz') ? parseInt(v('f-monthly-biz').replace(/,/g,''),10)||null : null,
+    brands:getBrandData(),multibrand:ynState.multibrand||'',
     salesResp:salesR,salaryResp:salaryR,spPhone:v('f-sp-phone'),digi:ynState.digi||'',
     createdAt:editingDistId?(getById(editingDistId)?.createdAt||new Date().toISOString()):new Date().toISOString(),
     updatedAt:new Date().toISOString(),
@@ -1193,7 +1335,7 @@ function renderTable(){
       <td class="td-hide">${r.area||'—'}</td>
       <td class="td-hide">${statusBadge}</td>
       <td class="td-mono td-hide" style="text-align:center">${visits.length}</td>
-      <td class="td-mono td-hide">${r.monthlyBiz?'₹'+r.monthlyBiz:'—'}</td>
+      <td class="td-mono td-hide">${r.monthlyBiz?'₹'+Number(r.monthlyBiz).toLocaleString('en-IN'):'—'}</td>
       <td>${digiBadge}</td>
       <td class="td-date td-hide">${lastDt}</td>
     </tr>`;
@@ -1284,7 +1426,7 @@ function showDetail(id){
         <div class="ds-head">Outlets &amp; Revenue</div>
         <div class="ds-row"><span class="ds-k">Active outlets</span><span class="ds-v">${r.activeOutlets||'—'}</span></div>
         <div class="ds-row"><span class="ds-k">Wholesale outlets</span><span class="ds-v">${r.wholesaleOutlets||'—'}</span></div>
-        <div class="ds-row"><span class="ds-k">Monthly business</span><span class="ds-v">${r.monthlyBiz?'₹'+r.monthlyBiz:'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Monthly business</span><span class="ds-v">${r.monthlyBiz?'₹'+Number(r.monthlyBiz).toLocaleString('en-IN'):'—'}</span></div>
       </div>
       <div class="detail-section full">
         <div class="ds-head">Brand-wise Breakdown</div>
@@ -1313,7 +1455,7 @@ function showDetail(id){
         return `<div class="detail-section full"><div class="ds-head">🛡️ Edit History (${log.length} change${log.length!==1?'s':''})</div>${rows}</div>`;
       })()}
     </div>
-    ${currentUser?.short==='sales'?`<div style="margin-top:4px">
+    ${currentUser?.short==='manager'?`<div style="margin-top:4px">
       <button onclick="confirmDelete('${r.id}')" style="display:flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:500;color:var(--error);background:var(--surface);cursor:pointer;transition:all .15s" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='var(--surface)'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete record
       </button>
@@ -1339,9 +1481,124 @@ function confirmDelete(id){
   if(confirm(`Delete "${rec.name}"? This cannot be undone.`)){deleteRecord(id);showView('dashboard');}
 }
 
+/* ── SETTINGS ──────────────────────────────────── */
+function switchSettingsTab(tab){
+  document.getElementById('settings-users').style.display=tab==='users'?'block':'none';
+  document.getElementById('settings-brands').style.display=tab==='brands'?'block':'none';
+  document.getElementById('stab-users').classList.toggle('active',tab==='users');
+  document.getElementById('stab-brands').classList.toggle('active',tab==='brands');
+}
+
+function renderSettings(){
+  renderUsersTable();
+  renderBrandsTable();
+}
+
+function renderUsersTable(){
+  const users=getUsers();
+  const roleLabel=r=>r==='manager'?'Manager':'Sales Rep';
+  const roleBadge=r=>r==='manager'?`<span class="badge badge-cat">Manager</span>`:`<span class="badge badge-pending" style="background:var(--p-faint);color:var(--p)">Sales Rep</span>`;
+  const lastLogin=u=>u.lastLogin?new Date(u.lastLogin).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Never';
+  const html=users.map(u=>{
+    const initials=u.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const isSelf=u.email===currentUser?.email;
+    return`<div class="user-row">
+      <div class="user-row-avatar">${initials}</div>
+      <div class="user-row-info">
+        <div class="user-row-name">${u.name} ${isSelf?'<span style="font-size:11px;color:var(--ink-3)">(you)</span>':''} ${roleBadge(u.role)}</div>
+        <div class="user-row-email">${u.email} · Last login: ${lastLogin(u)}</div>
+      </div>
+      <div class="user-row-actions">
+        ${!u.active?'<span class="tag-inactive">Inactive</span>':''}
+        ${!isSelf?`<button class="reset-pwd-btn" onclick="resetUserPassword('${u.id}')">Reset pwd</button>`:''}
+        ${!isSelf&&u.active?`<button class="deactivate-btn" onclick="toggleUserActive('${u.id}',false)">Deactivate</button>`:''}
+        ${!isSelf&&!u.active?`<button class="activate-btn" onclick="toggleUserActive('${u.id}',true)">Activate</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('usersTable').innerHTML=html||'<div class="no-visits">No users found.</div>';
+}
+
+function showAddUserForm(){
+  document.getElementById('addUserForm').style.display='block';
+  document.getElementById('tempPwdReveal').style.display='none';
+  document.getElementById('nu-name').focus();
+}
+
+function createUser(){
+  const name=document.getElementById('nu-name').value.trim();
+  const email=document.getElementById('nu-email').value.trim().toLowerCase();
+  const role=document.getElementById('nu-role').value;
+  if(!name||!email){alert('Name and email are required.');return;}
+  const users=getUsers();
+  if(users.find(u=>u.email===email)){alert('A user with this email already exists.');return;}
+  const temp=Math.random().toString(36).slice(2,8).toUpperCase();
+  users.push({id:'U'+Date.now().toString(36).toUpperCase(),name,email,role,active:true,lastLogin:null});
+  saveUsers(users);
+  // also add to static credentials so they can log in this session
+  STATIC_CREDENTIALS[email]={password:temp,user:{name,role:role==='manager'?'Manager':'Vendor Sales Rep',short:role,avatar:name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}};
+  document.getElementById('addUserForm').style.display='none';
+  document.getElementById('nu-name').value='';document.getElementById('nu-email').value='';
+  document.getElementById('tempPwdValue').textContent=temp;
+  document.getElementById('tempPwdReveal').style.display='block';
+  renderUsersTable();
+}
+
+function resetUserPassword(userId){
+  const temp=Math.random().toString(36).slice(2,8).toUpperCase();
+  const users=getUsers();
+  const u=users.find(u=>u.id===userId);
+  if(!u)return;
+  // update static credentials
+  STATIC_CREDENTIALS[u.email].password=temp;
+  document.getElementById('tempPwdValue').textContent=temp;
+  document.getElementById('tempPwdReveal').style.display='block';
+}
+
+function toggleUserActive(userId,active){
+  const users=getUsers();
+  const u=users.find(u=>u.id===userId);
+  if(u){u.active=active;saveUsers(users);renderUsersTable();}
+}
+
+function renderBrandsTable(){
+  const brands=getBrands();
+  const html=brands.map(b=>`<div class="brand-row">
+    <span class="brand-row-name ${b.active?'':'brand-inactive-name'}">${b.name}</span>
+    ${b.active?`<button class="deactivate-btn" onclick="toggleBrand('${b.id}',false)">Deactivate</button>`:
+               `<button class="activate-btn" onclick="toggleBrand('${b.id}',true)">Activate</button>`}
+  </div>`).join('');
+  document.getElementById('brandsTable').innerHTML=html||'<div class="no-visits">No brands found.</div>';
+}
+
+function showAddBrandForm(){
+  document.getElementById('addBrandForm').style.display='block';
+  document.getElementById('nb-name').focus();
+}
+
+function createBrand(){
+  const name=document.getElementById('nb-name').value.trim();
+  if(!name)return;
+  const brands=getBrands();
+  if(brands.find(b=>b.name.toLowerCase()===name.toLowerCase())){alert('Brand already exists.');return;}
+  brands.unshift({id:'B'+Date.now().toString(36).toUpperCase(),name,active:true});
+  saveBrandMaster(brands);
+  document.getElementById('addBrandForm').style.display='none';
+  document.getElementById('nb-name').value='';
+  refreshBrandDatalist();
+  renderBrandsTable();
+}
+
+function toggleBrand(id,active){
+  const brands=getBrands();
+  const b=brands.find(b=>b.id===id);
+  if(b){b.active=active;saveBrandMaster(brands);refreshBrandDatalist();renderBrandsTable();}
+}
+
 /* ── INIT ──────────────────────────────────────── */
 (function init(){
   seedIfEmpty();
+  refreshBrandDatalist();
   addBrandRow();addBrandRow();
 })();
 </script>
