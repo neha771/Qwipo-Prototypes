@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Qwipo · Distributor CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --p:#7C3AED;--p-dark:#5B21B6;--p-mid:#A78BFA;--p-light:#EDE9FE;--p-faint:#F5F3FF;
+  --ink:#1A1523;--ink-2:#4B4560;--ink-3:#8B7FA8;
+  --border:#E5E1EF;--border-2:#D1C4E9;
+  --bg:#F8F7FC;--surface:#FFFFFF;
+  --success:#059669;--success-bg:#ECFDF5;--success-border:#6EE7B7;
+  --warn:#D97706;--warn-bg:#FFFBEB;--warn-border:#FDE68A;
+  --error:#DC2626;--error-bg:#FEF2F2;
+  --r:10px;--r-sm:7px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow:0 1px 3px rgba(124,58,237,.06),0 4px 12px rgba(124,58,237,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:15px}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.55;min-height:100vh;overflow-x:hidden}
+.view{display:none;min-height:100vh}.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes savepulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── LOGIN ──────────────────────────────── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(124,58,237,.12)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.login-logo-mark{width:44px;height:44px;background:var(--p-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.login-logo-mark svg{width:24px;height:24px}
+.login-logo-name{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.login-title{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:4px;text-align:center}
+.login-sub{font-size:13px;color:var(--ink-3);margin-bottom:24px;text-align:center}
+.login-role-lbl{font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
+.login-roles{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.role-card{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;
+}
+.role-card:hover{border-color:var(--p-mid);background:var(--p-faint)}
+.role-card.selected{border-color:var(--p);background:var(--p-faint)}
+.role-card input[type=radio]{display:none}
+.role-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.role-info{flex:1}
+.role-name{font-size:13px;font-weight:600;color:var(--ink)}
+.role-desc{font-size:11px;color:var(--ink-3)}
+.login-btn{
+  width:100%;padding:13px;background:var(--p);border:none;border-radius:var(--r);
+  font-family:var(--font);font-size:14px;font-weight:600;color:#fff;cursor:pointer;transition:background .15s;
+}
+.login-btn:hover{background:var(--p-dark)}
+.login-note{font-size:11px;color:var(--ink-3);text-align:center;margin-top:12px}
+
+/* ── TOPBAR ──────────────────────────────── */
+.topbar{position:sticky;top:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:7px;cursor:pointer}
+.logo-mark{width:30px;height:30px;background:var(--p-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.logo-name{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.logo-name span{font-weight:400;color:var(--ink-3)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:background .15s}
+.user-chip:hover{background:var(--bg)}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.user-name{font-size:12px;font-weight:500;color:var(--ink-2)}
+.user-role-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--p-light);color:var(--p)}
+.vsw{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
+.vsw-btn{padding:5px 12px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--ink-3);border:none;background:transparent;cursor:pointer;transition:all .15s}
+.vsw-btn.active{background:var(--surface);color:var(--p);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.save-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-3)}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--warn);transition:background .3s}
+.save-dot.saved{background:var(--success)}
+.save-dot.pulse{animation:savepulse 1.5s ease-in-out infinite}
+
+/* ── PROGRESS TABS ───────────────────────── */
+.progress-bar-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px}
+.progress-tabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:0}
+.progress-tabs::-webkit-scrollbar{display:none}
+.ptab{flex:0 0 auto;padding:10px 14px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink-3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.ptab.active{color:var(--p);border-bottom-color:var(--p)}
+.ptab.done{color:var(--success)}
+.ptab-num{width:18px;height:18px;border-radius:50%;background:var(--border);font-size:10px;font-family:var(--mono);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-3);transition:all .15s;flex-shrink:0}
+.ptab.active .ptab-num{background:var(--p);color:#fff}
+.ptab.done .ptab-num{background:var(--success);color:#fff}
+
+/* ── FORM BODY ───────────────────────────── */
+.form-body{max-width:600px;margin:0 auto;padding:20px 20px 100px}
+.fsec{display:none;animation:fadein .2s ease}.fsec.visible{display:block}
+.fsec-head{margin-bottom:20px}
+.fsec-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--p);margin-bottom:3px}
+.fsec-title{font-size:20px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.fsec-sub{font-size:13px;color:var(--ink-3);margin-top:2px}
+
+/* visit banner */
+.visit-banner{background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid var(--border-2);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.visit-banner-icon{font-size:24px;flex-shrink:0}
+.visit-banner-txt .vb-title{font-size:13px;font-weight:600;color:var(--p)}
+.visit-banner-txt .vb-sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+.visit-status-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.vs-chip{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;border:1.5px solid var(--border)}
+.vs-chip.active-visit{background:var(--success-bg);border-color:var(--success-border);color:var(--success)}
+
+/* ── FIELD CARDS ─────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-label{font-size:11px;font-weight:500;color:var(--ink-3)}
+.req{color:var(--p)}
+.field{padding:11px 14px;border-bottom:1px solid var(--border);position:relative}
+.field:last-child{border-bottom:none}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.field-2 .field:first-child{border-right:1px solid var(--border)}
+.flabel{font-size:11px;font-weight:500;color:var(--ink-3);margin-bottom:3px;display:flex;align-items:center;gap:3px}
+.finput{width:100%;border:none;outline:none;font-family:var(--font);font-size:14px;font-weight:500;color:var(--ink);background:transparent;padding:0}
+.finput::placeholder{color:#C4BAD4;font-weight:400}
+.finput-mono{font-family:var(--mono);font-size:13px}
+select.finput{cursor:pointer;-webkit-appearance:none;appearance:none}
+textarea.finput{resize:none;min-height:56px;line-height:1.55}
+
+/* ── GPS ─────────────────────────────────── */
+.gps-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.gps-top{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gps-lbl{font-size:11px;font-weight:500;color:var(--ink-3);display:flex;align-items:center;gap:5px}
+.gps-btn{display:flex;align-items:center;gap:6px;background:var(--p);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 12px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap;flex-shrink:0}
+.gps-btn:hover{background:var(--p-dark)}
+.gps-btn svg{width:13px;height:13px}
+.gps-btn.loading{background:var(--ink-3);cursor:wait}
+.gps-fields{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.gps-input-wrap{padding:10px 14px;border-right:1px solid var(--border)}
+.gps-input-wrap:last-child{border-right:none}
+.gps-input-lbl{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.gps-alert{padding:8px 14px;font-size:12px;display:none}
+.gps-alert.ok{background:var(--success-bg);color:var(--success);display:block}
+.gps-alert.err{background:var(--error-bg);color:var(--error);display:block}
+
+/* ── CHIPS ───────────────────────────────── */
+.chips-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.chips-lbl{padding:10px 14px 7px;border-bottom:1px solid var(--border);font-size:11px;font-weight:500;color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px}
+.chip{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);transition:all .15s;user-select:none}
+.chip input{display:none}
+.chip.on{border-color:var(--p);background:var(--p-light);color:var(--p)}
+
+/* ── RADIO ───────────────────────────────── */
+.radio-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.radio-lbl{padding:10px 14px 7px;border-bottom:1px solid var(--border);font-size:11px;font-weight:500;color:var(--ink-3)}
+.radio-opts{display:flex}
+.radio-opt{flex:1;display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;border-right:1px solid var(--border);transition:background .1s}
+.radio-opt:last-child{border-right:none}
+.radio-opt:hover{background:var(--bg)}
+.radio-opt input[type=radio]{display:none}
+.rdot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);transition:all .15s;flex-shrink:0}
+.radio-opt input:checked+.rdot{border-color:var(--p);background:var(--p);box-shadow:inset 0 0 0 3px #fff}
+.radio-opt-txt{font-size:13px;font-weight:500}
+
+/* ── YES/NO ──────────────────────────────── */
+.yn-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--shadow)}
+.yn-card.highlight{background:var(--warn-bg);border-color:var(--warn-border)}
+.yn-txt{flex:1}
+.yn-title{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
+.yn-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+.yn-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:7px;overflow:hidden;flex-shrink:0}
+.yn-btn{padding:6px 14px;font-family:var(--font);font-size:12px;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--ink-3);transition:all .15s}
+.yn-btn.yes.active{background:var(--success);color:#fff}
+.yn-btn.no.active{background:#F3F4F6;color:var(--ink)}
+
+/* ── VISIT STATUS SELECT ─────────────────── */
+.status-select-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.status-opts{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
+.status-opt{padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);transition:all .15s;user-select:none}
+.status-opt.sel-Interested{border-color:var(--success);background:var(--success-bg);color:var(--success)}
+.status-opt.sel-Follow-up{border-color:#0284C7;background:#F0F9FF;color:#0284C7}
+.status-opt.sel-Closed{border-color:var(--p);background:var(--p-light);color:var(--p)}
+.status-opt.sel-Rejected{border-color:var(--error);background:var(--error-bg);color:var(--error)}
+
+/* ── BRAND TABLE ─────────────────────────── */
+.brand-tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.brand-tbl-head{padding:10px 14px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.add-btn{display:flex;align-items:center;gap:4px;background:var(--p-light);color:var(--p);border:none;border-radius:6px;padding:5px 10px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer}
+.add-btn:hover{background:var(--border-2)}
+table.btbl{width:100%;border-collapse:collapse;font-size:12px}
+table.btbl thead th{background:var(--bg);padding:7px 9px;text-align:left;font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+table.btbl tbody td{padding:5px 7px;border-bottom:1px solid var(--border);vertical-align:middle}
+table.btbl tbody tr:last-child td{border-bottom:none}
+table.btbl input,table.btbl select{width:100%;border:1px solid transparent;border-radius:5px;padding:5px 6px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--ink);background:transparent;outline:none;transition:all .15s}
+table.btbl input:focus,table.btbl select:focus{border-color:var(--p-mid);background:var(--p-faint)}
+table.btbl input::placeholder{color:#C4BAD4;font-weight:400}
+.delbtn{background:none;border:none;cursor:pointer;color:var(--border-2);font-size:17px;padding:2px 5px;border-radius:4px;transition:color .15s}
+.delbtn:hover{color:var(--error)}
+.brand-hint{font-size:11px;color:var(--ink-3);padding:7px 14px 9px;display:flex;align-items:center;gap:5px;border-top:1px solid var(--border);background:var(--bg)}
+.brand-hint svg{width:12px;height:12px;flex-shrink:0;color:var(--p-mid)}
+
+/* ── BOTTOM NAV ──────────────────────────── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--surface);border-top:1px solid var(--border);padding:10px 20px;display:flex;gap:10px;z-index:100}
+.btn-back{flex:0 0 auto;padding:11px 18px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:600;color:var(--ink-3);cursor:pointer;transition:all .15s}
+.btn-back:hover{background:var(--border);color:var(--ink)}
+.btn-next{flex:1;padding:11px 20px;background:var(--p);border:none;border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:600;color:#fff;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-next:hover{background:var(--p-dark)}
+.btn-next.submit{background:var(--success)}
+.btn-next.submit:hover{background:#047857}
+
+/* ── REVIEW ──────────────────────────────── */
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.review-sect-hd{padding:9px 14px;background:var(--p-faint);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--p)}
+.review-row{display:flex;padding:8px 14px;border-bottom:1px solid var(--border);gap:12px;align-items:flex-start}
+.review-row:last-child{border-bottom:none}
+.rk{font-size:12px;color:var(--ink-3);width:155px;flex-shrink:0;padding-top:1px}
+.rv{font-size:13px;font-weight:500;color:var(--ink);flex:1}
+.rv.empty{color:#C4BAD4;font-style:italic;font-weight:400}
+.rv.yes{color:var(--success)}
+
+/* ── SUCCESS ─────────────────────────────── */
+.success-wrap{padding:60px 24px;text-align:center;max-width:400px;margin:0 auto}
+.suc-icon{width:68px;height:68px;background:var(--success-bg);border:2px solid var(--success-border);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:30px}
+.suc-title{font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-bottom:7px}
+.suc-sub{font-size:14px;color:var(--ink-3);line-height:1.6;margin-bottom:24px}
+.suc-meta{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;text-align:left;margin-bottom:16px}
+.suc-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
+.suc-row:last-child{border:none}
+.suc-k{color:var(--ink-3)}.suc-v{font-weight:500}
+.suc-digi-yes{color:var(--success);font-weight:600}
+.suc-actions{display:flex;flex-direction:column;gap:8px}
+.btn-primary{width:100%;padding:13px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:var(--p-dark)}
+.btn-secondary{width:100%;padding:13px;background:var(--surface);color:var(--ink-2);border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{background:var(--bg)}
+
+/* ── DASHBOARD ───────────────────────────── */
+.dash-body{max-width:1060px;margin:0 auto;padding:20px 20px 40px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:11px;font-weight:500;color:var(--ink-3);margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.stat-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+.stat-card.accent{background:var(--p);border-color:var(--p)}
+.stat-card.accent .stat-lbl,.stat-card.accent .stat-sub{color:rgba(255,255,255,.7)}
+.stat-card.accent .stat-val{color:#fff}
+.stat-card.warn{background:var(--warn-bg);border-color:var(--warn-border)}
+.stat-card.warn .stat-lbl{color:var(--warn)}
+.stat-card.warn .stat-val{color:#92400E}
+.stat-card.warn .stat-sub{color:#B45309}
+.dash-toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-3);width:15px;height:15px}
+.search-inp{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;color:var(--ink);background:var(--surface);outline:none;transition:border-color .15s}
+.search-inp:focus{border-color:var(--p-mid)}
+.search-inp::placeholder{color:var(--ink-3)}
+.filter-select{padding:8px 28px 8px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;color:var(--ink);background:var(--surface);outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238B7FA8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.results-count{font-size:12px;color:var(--ink-3);white-space:nowrap}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+table.dist-tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.dist-tbl thead th{background:var(--bg);padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap}
+table.dist-tbl tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+table.dist-tbl tbody tr:last-child{border-bottom:none}
+table.dist-tbl tbody tr:hover{background:var(--p-faint)}
+table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
+.td-name{font-weight:500;color:var(--ink)}
+.td-phone{color:var(--ink-3);font-size:12px;font-family:var(--mono)}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-cat{background:var(--p-light);color:var(--p)}
+.badge-yes{background:var(--success-bg);color:var(--success)}
+.badge-no{background:var(--bg);color:var(--ink-3);border:1px solid var(--border)}
+.badge-pending{background:var(--bg);color:var(--ink-3)}
+.badge-more{background:var(--bg);color:var(--ink-3);font-size:10px;border:1px solid var(--border)}
+.badge-status-Interested{background:var(--success-bg);color:var(--success)}
+.badge-status-Follow-up{background:#F0F9FF;color:#0284C7}
+.badge-status-Closed{background:var(--p-light);color:var(--p)}
+.badge-status-Rejected{background:var(--error-bg);color:var(--error)}
+.td-mono{font-family:var(--mono);font-size:12px}
+.td-date{font-size:12px;color:var(--ink-3)}
+.empty-state{padding:60px 20px;text-align:center}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--ink-3)}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--border);font-size:12px;color:var(--ink-3)}
+.pg-btns{display:flex;gap:4px}
+.pg-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--ink-2);background:var(--surface);cursor:pointer;transition:all .15s}
+.pg-btn:hover{background:var(--bg)}
+.pg-btn.active{background:var(--p);color:#fff;border-color:var(--p)}
+.pg-btn:disabled{opacity:.4;cursor:default}
+
+/* ── DETAIL VIEW ─────────────────────────── */
+.detail-body{max-width:760px;margin:0 auto;padding:20px 20px 40px}
+.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--ink-3);cursor:pointer;margin-bottom:18px;padding:6px 0;border:none;background:none;font-family:var(--font);transition:color .15s}
+.detail-back:hover{color:var(--p)}
+.detail-back svg{width:14px;height:14px}
+.detail-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.detail-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.detail-avatar{width:48px;height:48px;border-radius:50%;background:var(--p-light);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--p);flex-shrink:0}
+.detail-name-block{flex:1;min-width:0}
+.detail-name{font-size:20px;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-bottom:3px}
+.detail-meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dmeta{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink-3)}
+.dmeta svg{width:12px;height:12px;flex-shrink:0}
+.detail-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.edit-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;transition:all .15s;align-self:flex-start;white-space:nowrap}
+.edit-btn:hover{background:var(--p-light);color:var(--p);border-color:var(--p-mid)}
+.edit-btn svg{width:13px;height:13px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.detail-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.detail-section.full{grid-column:1/-1}
+.ds-head{padding:9px 14px;background:var(--p-faint);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--p)}
+.ds-row{display:flex;padding:8px 14px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.ds-row:last-child{border-bottom:none}
+.ds-k{font-size:11px;color:var(--ink-3);width:120px;flex-shrink:0;padding-top:2px}
+.ds-v{font-size:13px;font-weight:500;color:var(--ink);flex:1}
+.ds-v.mono{font-family:var(--mono);font-size:12px}
+.ds-v.yes{color:var(--success)}
+.brand-pills{display:flex;flex-wrap:wrap;gap:5px}
+.brand-pill{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:4px 10px;font-size:12px}
+.brand-pill strong{color:var(--p)}
+
+/* ── VISIT TIMELINE ──────────────────────── */
+.visit-timeline{position:relative;padding:0 14px 0 14px}
+.timeline-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);position:relative}
+.timeline-item:last-child{border-bottom:none}
+.tl-dot-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:3px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--p-mid);flex-shrink:0}
+.tl-dot.first{background:var(--p)}
+.tl-line{width:1px;flex:1;background:var(--border);margin-top:4px}
+.tl-body{flex:1;min-width:0}
+.tl-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.tl-title{font-size:13px;font-weight:600;color:var(--ink)}
+.tl-date{font-size:11px;color:var(--ink-3);white-space:nowrap}
+.tl-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;align-items:center}
+.tl-by{font-size:12px;color:var(--ink-3)}
+.tl-gps{font-size:11px;color:var(--ink-3);font-family:var(--mono);display:flex;align-items:center;gap:3px}
+.tl-comment{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:8px;background:var(--bg);padding:8px 10px;border-radius:6px;border:1px solid var(--border)}
+.add-comment-wrap{margin-top:6px}
+.add-comment-inp{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:13px;color:var(--ink);background:var(--surface);outline:none;resize:none;line-height:1.4;transition:border-color .15s}
+.add-comment-inp:focus{border-color:var(--p-mid)}
+.comment-row{display:flex;gap:6px;margin-top:6px}
+.comment-submit-btn{padding:6px 14px;background:var(--p);color:#fff;border:none;border-radius:6px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:background .15s}
+.comment-submit-btn:hover{background:var(--p-dark)}
+.comment-cancel-btn{padding:6px 10px;background:var(--bg);color:var(--ink-3);border:1px solid var(--border);border-radius:6px;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer}
+.comment-thread{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 10px}
+.comment-author{font-size:11px;font-weight:600;color:var(--p);margin-bottom:2px}
+.comment-text{font-size:13px;color:var(--ink-2);line-height:1.4}
+.comment-ts{font-size:10px;color:var(--ink-3);margin-top:4px}
+.no-visits{padding:24px;text-align:center;font-size:13px;color:var(--ink-3)}
+
+/* ── AUDIT LOG ───────────────────────────── */
+.audit-row{display:flex;padding:8px 14px;border-bottom:1px solid var(--border);gap:10px;align-items:flex-start}
+.audit-row:last-child{border-bottom:none}
+.audit-who{font-size:12px;font-weight:500;color:var(--p);flex-shrink:0;width:100px}
+.audit-what{font-size:12px;color:var(--ink-2);flex:1;line-height:1.4}
+.audit-when{font-size:11px;color:var(--ink-3);flex-shrink:0}
+
+/* ── START VISIT BUTTON ──────────────────── */
+.start-visit-wrap{background:var(--p);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sv-txt .sv-title{font-size:14px;font-weight:600;color:#fff}
+.sv-txt .sv-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.start-visit-btn{display:flex;align-items:center;gap:6px;background:#fff;color:var(--p);border:none;border-radius:var(--r-sm);padding:9px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.start-visit-btn:hover{opacity:.9}
+.start-visit-btn svg{width:15px;height:15px}
+
+/* ── NOTES BOX ───────────────────────────── */
+.notes-box{padding:12px 14px;font-size:13px;color:var(--ink-2);line-height:1.6;background:var(--bg);border-radius:0 0 var(--r) var(--r)}
+
+/* ── RESPONSIVE ──────────────────────────── */
+@media(max-width:600px){
+  .detail-grid{grid-template-columns:1fr}
+  .detail-section.full{grid-column:auto}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .field-2{grid-template-columns:1fr}
+  .field-2 .field:first-child{border-right:none}
+  table.dist-tbl .td-hide{display:none}
+  .topbar,.form-body,.dash-body,.detail-body{padding-left:12px;padding-right:12px}
+}
+@media(max-width:400px){.stats-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═════════════════════ -->
+<div class="view active" id="view-login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-mark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7.5V16.5L12 21L20 16.5V7.5L12 3Z" fill="#7C3AED" opacity=".18"/><path d="M12 3L4 7.5V16.5L12 21L20 16.5V7.5L12 3Z" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.5" fill="#7C3AED"/></svg>
+        </div>
+        <span class="login-logo-name">Qwipo</span>
+      </div>
+      <div class="login-title">Distributor CRM</div>
+      <div class="login-sub">Sign in to continue</div>
+      <div class="login-role-lbl">Sign in as</div>
+      <div class="login-roles" id="loginRoles">
+        <label class="role-card selected" id="rc-sales">
+          <input type="radio" name="loginRole" value="sales" checked onchange="selectRole(this)"/>
+          <div class="role-icon" style="background:#EDE9FE">🧑‍💼</div>
+          <div class="role-info">
+            <div class="role-name">Vendor Sales Rep</div>
+            <div class="role-desc">Add and update distributor visits</div>
+          </div>
+        </label>
+        <label class="role-card" id="rc-manager">
+          <input type="radio" name="loginRole" value="manager" onchange="selectRole(this)"/>
+          <div class="role-icon" style="background:#ECFDF5">👔</div>
+          <div class="role-info">
+            <div class="role-name">Manager / Business Team</div>
+            <div class="role-desc">Dashboard, comments, edit history &amp; audit log</div>
+          </div>
+        </label>
+
+      </div>
+      <button class="login-btn" onclick="doLogin()">Continue →</button>
+      <div class="login-note">⚡ Static login for prototype — no password required</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TOPBAR ════════════════════ -->
+<div class="topbar" id="mainTopbar" style="display:none">
+  <div class="topbar-left">
+    <div class="logo" onclick="showView('dashboard')">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7.5V16.5L12 21L20 16.5V7.5L12 3Z" fill="#7C3AED" opacity=".18"/><path d="M12 3L4 7.5V16.5L12 21L20 16.5V7.5L12 3Z" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.5" fill="#7C3AED"/></svg></div>
+      <span class="logo-name">Qwipo <span>/ Distributor CRM</span></span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="vsw" id="topVsw">
+      <button class="vsw-btn active" id="vsw-dashboard" onclick="showView('dashboard')">Dashboard</button>
+      <button class="vsw-btn" id="vsw-form" onclick="startNewVisit()">+ New Visit</button>
+    </div>
+    <div class="save-chip" id="saveChip" style="display:none">
+      <div class="save-dot pulse" id="saveDot"></div><span id="saveText">Unsaved</span>
+    </div>
+    <div class="user-chip" onclick="doLogout()">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span class="user-name" id="userName">—</span>
+      <span class="user-role-badge" id="userRoleBadge">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FORM VIEW ═════════════════ -->
+<div class="view" id="view-form">
+  <div class="progress-bar-wrap">
+    <div class="progress-tabs">
+      <div class="ptab active" id="ptab-0" onclick="goToStep(0)"><span class="ptab-num" id="pnum-0">1</span>Visit Info</div>
+      <div class="ptab" id="ptab-1" onclick="goToStep(1)"><span class="ptab-num" id="pnum-1">2</span>Basic Info</div>
+      <div class="ptab" id="ptab-2" onclick="goToStep(2)"><span class="ptab-num" id="pnum-2">3</span>Operations</div>
+      <div class="ptab" id="ptab-3" onclick="goToStep(3)"><span class="ptab-num" id="pnum-3">4</span>Brands</div>
+      <div class="ptab" id="ptab-4" onclick="goToStep(4)"><span class="ptab-num" id="pnum-4">5</span>Sales Team</div>
+      <div class="ptab" id="ptab-5" onclick="goToStep(5)"><span class="ptab-num" id="pnum-5">6</span>Review</div>
+    </div>
+  </div>
+  <div class="form-body">
+
+    <!-- STEP 0: VISIT INFO -->
+    <div class="fsec visible" id="fsec-0">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 1 of 6</div>
+        <div class="fsec-title">Visit Information</div>
+        <div class="fsec-sub">Capture visit details — GPS is auto-recorded on "Start Visit"</div>
+      </div>
+      <div class="visit-banner">
+        <div class="visit-banner-icon">📍</div>
+        <div class="visit-banner-txt">
+          <div class="vb-title">Visit GPS auto-capture</div>
+          <div class="vb-sub">Click "Start Visit" on the distributor's profile page to capture location, date and time automatically.</div>
+          <div class="visit-status-row">
+            <span class="vs-chip" id="visitGpsChip">📍 GPS not yet captured</span>
+            <span class="vs-chip" id="visitTimeChip">🕐 Time not set</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="field-2">
+          <div class="field">
+            <div class="flabel"><span class="req">*</span> Visit Date</div>
+            <input class="finput" id="f-visit-date" type="date" oninput="autosave()"/>
+          </div>
+          <div class="field">
+            <div class="flabel">Start Time</div>
+            <input class="finput" id="f-visit-start" type="time" oninput="autosave()"/>
+          </div>
+        </div>
+      </div>
+      <div class="gps-card">
+        <div class="gps-top">
+          <div class="gps-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Visit GPS Coordinates</div>
+          <button class="gps-btn" id="visitGpsBtn" onclick="captureVisitGPS()"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Capture Now</button>
+        </div>
+        <div class="gps-fields">
+          <div class="gps-input-wrap"><div class="gps-input-lbl">Latitude</div><input class="finput finput-mono" id="f-visit-lat" type="text" placeholder="9.5916" oninput="autosave()"/></div>
+          <div class="gps-input-wrap"><div class="gps-input-lbl">Longitude</div><input class="finput finput-mono" id="f-visit-lng" type="text" placeholder="76.5222" oninput="autosave()"/></div>
+        </div>
+        <div class="gps-alert" id="visitGpsAlert"></div>
+      </div>
+      <div class="status-select-wrap">
+        <div class="chips-lbl">Visit Status <span class="req">*</span></div>
+        <div class="status-opts" id="statusOpts">
+          <span class="status-opt" onclick="selectStatus('Interested')">Interested</span>
+          <span class="status-opt" onclick="selectStatus('Follow-up')">Follow-up Required</span>
+          <span class="status-opt" onclick="selectStatus('Closed')">Closed / Onboarded</span>
+          <span class="status-opt" onclick="selectStatus('Rejected')">Rejected</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="field">
+          <div class="flabel">Visit Comments / Remarks <span class="req">*</span></div>
+          <textarea class="finput" id="f-visit-notes" placeholder="What happened during this visit? Key observations, distributor feedback, next steps…" oninput="autosave()" style="min-height:80px"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: BASIC INFO -->
+    <div class="fsec" id="fsec-1">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 2 of 6</div>
+        <div class="fsec-title">Basic Information</div>
+        <div class="fsec-sub">Distributor identity, location and tools</div>
+      </div>
+      <div class="card">
+        <div class="field">
+          <div class="flabel"><span class="req">*</span> Distributor Name</div>
+          <input class="finput" id="f-name" type="text" placeholder="e.g. Raj Distributors" autocomplete="off" oninput="autosave()"/>
+        </div>
+        <div class="field-2">
+          <div class="field">
+            <div class="flabel"><span class="req">*</span> Phone Number</div>
+            <input class="finput" id="f-phone" type="tel" placeholder="+91 98765 43210" oninput="autosave()"/>
+          </div>
+          <div class="field">
+            <div class="flabel">Area / Geo</div>
+            <input class="finput" id="f-area" type="text" placeholder="e.g. Kottayam North" oninput="autosave()"/>
+          </div>
+        </div>
+      </div>
+      <div class="gps-card">
+        <div class="gps-top">
+          <div class="gps-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Distributor Location (GPS)</div>
+          <button class="gps-btn" id="gpsBtn" onclick="captureGPS()"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Auto-capture</button>
+        </div>
+        <div class="gps-fields">
+          <div class="gps-input-wrap"><div class="gps-input-lbl">Latitude</div><input class="finput finput-mono" id="f-lat" type="text" placeholder="9.5916" oninput="autosave()"/></div>
+          <div class="gps-input-wrap"><div class="gps-input-lbl">Longitude</div><input class="finput finput-mono" id="f-lng" type="text" placeholder="76.5222" oninput="autosave()"/></div>
+        </div>
+        <div class="gps-alert" id="gpsAlert"></div>
+      </div>
+      <div class="chips-card">
+        <div class="chips-lbl">Categories Dealt With <span class="req">*</span></div>
+        <div class="chips">
+          <label class="chip" id="ch-FMCG"><input type="checkbox" value="FMCG" onchange="toggleChip(this,'ch-FMCG')"/> FMCG</label>
+          <label class="chip" id="ch-Grocery"><input type="checkbox" value="Grocery" onchange="toggleChip(this,'ch-Grocery')"/> Grocery</label>
+          <label class="chip" id="ch-Oil"><input type="checkbox" value="Oil" onchange="toggleChip(this,'ch-Oil')"/> Oil</label>
+          <label class="chip" id="ch-Staples"><input type="checkbox" value="Staples" onchange="toggleChip(this,'ch-Staples')"/> Staples</label>
+          <label class="chip" id="ch-Beverages"><input type="checkbox" value="Beverages" onchange="toggleChip(this,'ch-Beverages')"/> Beverages</label>
+          <label class="chip" id="ch-Personal Care"><input type="checkbox" value="Personal Care" onchange="toggleChip(this,'ch-Personal Care')"/> Personal Care</label>
+          <label class="chip" id="ch-Other"><input type="checkbox" value="Other" onchange="toggleChip(this,'ch-Other');toggleOtherCat(this)"/> Other</label>
+        </div>
+        <div id="other-cat-wrap" style="display:none;padding:0 12px 10px">
+          <input class="finput" id="f-other-cat" type="text" placeholder="Specify category…" autocomplete="off" oninput="autosave()" style="border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;font-size:13px;width:100%"/>
+        </div>
+      </div>
+      <div class="card">
+        <div class="field-2">
+          <div class="field"><div class="flabel">DMS Tool</div><select class="finput" id="f-dms" onchange="autosave()"><option value="">None / Unknown</option><option>Bizom</option><option>Distiman</option><option>StockRoute</option><option>Marg ERP</option><option>Custom / In-house</option></select></div>
+          <div class="field"><div class="flabel">Billing Tool</div><select class="finput" id="f-billing" onchange="autosave()"><option value="">None / Unknown</option><option>Tally</option><option>Busy</option><option>Marg</option><option>Vyapar</option><option>Custom / In-house</option></select></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: OPERATIONS -->
+    <div class="fsec" id="fsec-2">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 3 of 6</div>
+        <div class="fsec-title">Operations</div>
+        <div class="fsec-sub">Logistics, reach and order handling</div>
+      </div>
+      <div class="card">
+        <div class="field-2">
+          <div class="field"><div class="flabel">No. of Trucks</div><input class="finput" id="f-trucks" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+          <div class="field"><div class="flabel">Distribution Radius (km)</div><input class="finput" id="f-radius" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+        </div>
+        <div class="field-2">
+          <div class="field"><div class="flabel">Daily Orders per Beat</div><input class="finput" id="f-daily-orders" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+          <div class="field"><div class="flabel">Min. Order Value (₹)</div><input class="finput" id="f-min-order" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+        </div>
+      </div>
+      <div class="yn-card">
+        <div class="yn-txt"><div class="yn-title">Can manage non-beat orders?</div><div class="yn-sub">Orders outside the regular beat route</div></div>
+        <div class="yn-toggle"><button class="yn-btn yes" id="yn-nonbeat-yes" onclick="setYN('nonbeat','yes')">Yes</button><button class="yn-btn no" id="yn-nonbeat-no" onclick="setYN('nonbeat','no')">No</button></div>
+      </div>
+      <div class="card">
+        <div class="field-2">
+          <div class="field"><div class="flabel">Active Outlets</div><input class="finput" id="f-active-outlets" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+          <div class="field"><div class="flabel">Wholesale Outlets</div><input class="finput" id="f-wholesale-outlets" type="number" min="0" placeholder="0" oninput="autosave()"/></div>
+        </div>
+        <div class="field"><div class="flabel">Approx. Monthly Business (₹)</div><input class="finput" id="f-monthly-biz" type="text" placeholder="e.g. 15,00,000" oninput="autosave()"/></div>
+      </div>
+    </div>
+
+    <!-- STEP 3: BRANDS -->
+    <div class="fsec" id="fsec-3">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 4 of 6</div>
+        <div class="fsec-title">Brand-wise Data</div>
+        <div class="fsec-sub">Add one row per brand</div>
+      </div>
+      <div class="brand-tbl-wrap">
+        <div class="brand-tbl-head">
+          <div class="card-label">Brands dealt with <span class="req">*</span></div>
+          <button class="add-btn" onclick="addBrandRow()">+ Add brand</button>
+        </div>
+        <datalist id="brandList">
+          <option value="HUL (Hindustan Unilever)"/><option value="ITC"/><option value="Nestlé"/>
+          <option value="Britannia"/><option value="Parle"/><option value="Dabur"/><option value="Marico"/>
+          <option value="Godrej Consumer Products"/><option value="Emami"/><option value="Colgate-Palmolive"/>
+          <option value="P&G"/><option value="Reckitt"/><option value="Amul"/><option value="Mother Dairy"/>
+          <option value="Haldiram's"/><option value="Bikaji Foods"/><option value="Adani Wilmar (Fortune)"/>
+          <option value="Patanjali"/><option value="CavinKare"/><option value="Jyothy Labs"/>
+          <option value="Nirma"/><option value="Perfetti Van Melle"/><option value="Mondelez (Cadbury)"/>
+          <option value="Red Bull"/><option value="Coca-Cola India"/><option value="PepsiCo India"/>
+          <option value="Tata Consumer Products"/><option value="MTR Foods"/>
+          <option value="Eastern Condiments"/><option value="Catch Spices"/><option value="Everest Spices"/>
+          <option value="MDH Spices"/><option value="Sunfeast (ITC)"/><option value="Bingo (ITC)"/>
+          <option value="Maggi (Nestlé)"/><option value="Surf Excel (HUL)"/><option value="Vim (HUL)"/>
+          <option value="Lifebuoy (HUL)"/><option value="Dove (HUL)"/><option value="Parachute (Marico)"/>
+          <option value="Saffola (Marico)"/><option value="Real (Dabur)"/><option value="Vatika (Dabur)"/>
+          <option value="Aashirvaad (ITC)"/><option value="Ujala (Jyothy)"/><option value="Chik (CavinKare)"/>
+          <option value="Meera (CavinKare)"/><option value="Exo (CavinKare)"/>
+        </datalist>
+        <table class="btbl" id="brandTable">
+          <thead><tr><th style="width:32%">Brand</th><th style="width:24%">Revenue/mo (₹)</th><th style="width:16%">Margin %</th><th style="width:18%">Sales persons</th><th style="width:6%"></th></tr></thead>
+          <tbody id="brandBody"></tbody>
+        </table>
+        <div class="brand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Type to search brands — select from list or enter a new name.</div>
+      </div>
+      <div class="yn-card">
+        <div class="yn-txt"><div class="yn-title">Uses same sales person across multiple brands?</div></div>
+        <div class="yn-toggle"><button class="yn-btn yes" id="yn-multibrand-yes" onclick="setYN('multibrand','yes')">Yes</button><button class="yn-btn no" id="yn-multibrand-no" onclick="setYN('multibrand','no')">No</button></div>
+      </div>
+    </div>
+
+    <!-- STEP 4: SALES TEAM -->
+    <div class="fsec" id="fsec-4">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 5 of 6</div>
+        <div class="fsec-title">Sales Team</div>
+        <div class="fsec-sub">Responsibility, contacts and DigiDukaan interest</div>
+      </div>
+      <div class="radio-card">
+        <div class="radio-lbl">Sales responsibility managed by</div>
+        <div class="radio-opts">
+          <label class="radio-opt"><input type="radio" name="salesResp" value="Company" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Company</span></label>
+          <label class="radio-opt"><input type="radio" name="salesResp" value="Self" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Self</span></label>
+          <label class="radio-opt"><input type="radio" name="salesResp" value="Both" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Both</span></label>
+        </div>
+      </div>
+      <div class="radio-card">
+        <div class="radio-lbl">Salary responsibility for sales persons</div>
+        <div class="radio-opts">
+          <label class="radio-opt"><input type="radio" name="salaryResp" value="Company" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Company</span></label>
+          <label class="radio-opt"><input type="radio" name="salaryResp" value="Self" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Self</span></label>
+          <label class="radio-opt"><input type="radio" name="salaryResp" value="Both" onchange="autosave()"/><div class="rdot"></div><span class="radio-opt-txt">Both</span></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="field"><div class="flabel">Sales Person Phone (images &amp; SKU collection)</div><input class="finput" id="f-sp-phone" type="tel" placeholder="+91 98765 43210" oninput="autosave()"/></div>
+      </div>
+      <div class="yn-card highlight">
+        <div class="yn-txt">
+          <div class="yn-title" style="font-weight:600;color:#92400E">Interested to onboard DigiDukaan?</div>
+          <div class="yn-sub" style="color:#B45309">This determines follow-up priority</div>
+        </div>
+        <div class="yn-toggle"><button class="yn-btn yes" id="yn-digi-yes" onclick="setYN('digi','yes')">Yes</button><button class="yn-btn no" id="yn-digi-no" onclick="setYN('digi','no')">No</button></div>
+      </div>
+    </div>
+
+    <!-- STEP 5: REVIEW -->
+    <div class="fsec" id="fsec-5">
+      <div class="fsec-head">
+        <div class="fsec-label">Step 6 of 6</div>
+        <div class="fsec-title">Review &amp; Submit</div>
+        <div class="fsec-sub">Confirm everything before saving</div>
+      </div>
+      <div class="review-card">
+        <div class="review-sect-hd">Visit Details</div>
+        <div class="review-row"><span class="rk">Date</span><span class="rv" id="rv-vdate">—</span></div>
+        <div class="review-row"><span class="rk">Time</span><span class="rv" id="rv-vtime">—</span></div>
+        <div class="review-row"><span class="rk">Visit GPS</span><span class="rv" id="rv-vgps">—</span></div>
+        <div class="review-row"><span class="rk">Status</span><span class="rv" id="rv-vstatus">—</span></div>
+        <div class="review-row"><span class="rk">Comments</span><span class="rv" id="rv-vnotes">—</span></div>
+      </div>
+      <div class="review-card">
+        <div class="review-sect-hd">Basic Information</div>
+        <div class="review-row"><span class="rk">Distributor name</span><span class="rv" id="rv-name">—</span></div>
+        <div class="review-row"><span class="rk">Phone</span><span class="rv" id="rv-phone">—</span></div>
+        <div class="review-row"><span class="rk">Area / Geo</span><span class="rv" id="rv-area">—</span></div>
+        <div class="review-row"><span class="rk">GPS coordinates</span><span class="rv" id="rv-gps">—</span></div>
+        <div class="review-row"><span class="rk">Categories</span><span class="rv" id="rv-cats">—</span></div>
+        <div class="review-row"><span class="rk">DMS / Billing</span><span class="rv" id="rv-tools">—</span></div>
+      </div>
+      <div class="review-card">
+        <div class="review-sect-hd">Brands</div>
+        <div class="rv" id="rv-brands" style="padding:10px 14px">—</div>
+      </div>
+      <div class="review-card">
+        <div class="review-sect-hd">Sales Team</div>
+        <div class="review-row"><span class="rk">Sales resp.</span><span class="rv" id="rv-salesresp">—</span></div>
+        <div class="review-row"><span class="rk">Salary resp.</span><span class="rv" id="rv-salaryresp">—</span></div>
+        <div class="review-row"><span class="rk">DigiDukaan</span><span class="rv" id="rv-digi">—</span></div>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="fsec" id="fsec-success">
+      <div class="success-wrap">
+        <div class="suc-icon">✓</div>
+        <div class="suc-title">Visit recorded!</div>
+        <div class="suc-sub">This visit has been added to the distributor's timeline and is visible in the dashboard.</div>
+        <div class="suc-meta">
+          <div class="suc-row"><span class="suc-k">Distributor</span><span class="suc-v" id="suc-name">—</span></div>
+          <div class="suc-row"><span class="suc-k">Status</span><span class="suc-v" id="suc-status">—</span></div>
+          <div class="suc-row"><span class="suc-k">Recorded by</span><span class="suc-v" id="suc-by">—</span></div>
+          <div class="suc-row"><span class="suc-k">DigiDukaan</span><span class="suc-v" id="suc-digi">—</span></div>
+        </div>
+        <div class="suc-actions">
+          <button class="btn-primary" id="suc-view-dist" onclick="">View distributor profile</button>
+          <button class="btn-secondary" onclick="showView('dashboard')">Go to dashboard</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-body -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="btn-back" id="btnBack" onclick="prevStep()" style="display:none">← Back</button>
+    <button class="btn-next" id="btnNext" onclick="nextStep()">Continue <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  </div>
+</div><!-- /view-form -->
+
+<!-- ═══════════════ DASHBOARD ═════════════════ -->
+<div class="view" id="view-dashboard">
+  <div class="dash-body">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="dash-toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-inp" id="searchInp" type="text" placeholder="Search by name, area, brand…" oninput="renderTable()"/>
+      </div>
+      <select class="filter-select" id="filterCat" onchange="renderTable()">
+        <option value="">All categories</option>
+        <option>FMCG</option><option>Grocery</option><option>Oil</option><option>Staples</option><option>Beverages</option><option>Personal Care</option>
+      </select>
+      <select class="filter-select" id="filterDigi" onchange="renderTable()">
+        <option value="">All — DigiDukaan</option>
+        <option value="yes">Interested</option><option value="no">Not interested</option>
+      </select>
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="dist-tbl">
+        <thead><tr>
+          <th>Distributor</th>
+          <th class="td-hide">Area</th>
+          <th class="td-hide">Last Visit Status</th>
+          <th class="td-hide">Visits</th>
+          <th class="td-hide">Monthly biz</th>
+          <th>DigiDukaan</th>
+          <th class="td-hide">Last visit</th>
+        </tr></thead>
+        <tbody id="distTbody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No distributors yet</div>
+        <div class="empty-sub">Add your first visit using the form</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DETAIL VIEW ══════════════ -->
+<div class="view" id="view-detail">
+  <div class="detail-body">
+    <button class="detail-back" onclick="showView('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to dashboard
+    </button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ JAVASCRIPT ════════════════ -->
+<script>
+/* ── STATIC USERS ─────────────────────────────── */
+const USERS = {
+  sales: { name:'Priya Nair', role:'Vendor Sales Rep', short:'sales', avatar:'PN' },
+  manager: { name:'Rohan Menon', role:'Manager', short:'manager', avatar:'RM' }
+};
+let currentUser = null;
+
+/* ── STORAGE (🔌 swap with API calls) ─────────────
+   GET    /api/distributors        → getAll()
+   POST   /api/distributors        → saveRecord()
+   DELETE /api/distributors/:id    → deleteRecord()
+   POST   /api/visits              → saveVisit()
+   POST   /api/comments            → saveComment()
+─────────────────────────────────────────────────── */
+const DB_KEY='qwipo_distributors';
+const VISIT_KEY='qwipo_visits';
+const AUDIT_KEY='qwipo_audit';
+
+function getAll(){ try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]')}catch{return[]} }
+function saveRecord(rec, auditFields){
+  const all=getAll(); const idx=all.findIndex(r=>r.id===rec.id);
+  // write audit log entries for each changed field
+  if(idx>=0 && auditFields && currentUser){
+    const old=all[idx];
+    auditFields.forEach(f=>{
+      if(String(old[f]||'')!==String(rec[f]||'')){
+        writeAudit(rec.id, f, old[f]||'—', rec[f]||'—');
+      }
+    });
+  }
+  if(idx>=0)all[idx]=rec; else all.unshift(rec);
+  localStorage.setItem(DB_KEY,JSON.stringify(all));
+}
+function writeAudit(distId, field, from, to){
+  const all = getAuditLog(distId);
+  all.unshift({ id:'A'+Date.now().toString(36), distId, field, from:String(from), to:String(to), by:currentUser?.name||'?', role:currentUser?.role||'', ts:new Date().toISOString() });
+  const stored = JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]').filter(a=>a.distId!==distId);
+  localStorage.setItem(AUDIT_KEY, JSON.stringify([...all, ...stored]));
+}
+function getAuditLog(distId){ try{return JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]').filter(a=>a.distId===distId)}catch{return[]} }
+function deleteRecord(id){ localStorage.setItem(DB_KEY,JSON.stringify(getAll().filter(r=>r.id!==id))); }
+function getById(id){ return getAll().find(r=>r.id===id) }
+function getVisits(distId){ try{return JSON.parse(localStorage.getItem(VISIT_KEY)||'[]').filter(v=>v.distId===distId)}catch{return[]} }
+function getAllVisits(){ try{return JSON.parse(localStorage.getItem(VISIT_KEY)||'[]')}catch{return[]} }
+function saveVisit(visit){
+  const all=getAllVisits(); const idx=all.findIndex(v=>v.id===visit.id);
+  if(idx>=0)all[idx]=visit; else all.unshift(visit);
+  localStorage.setItem(VISIT_KEY,JSON.stringify(all));
+}
+
+/* ── SEED ──────────────────────────────────────── */
+function seedIfEmpty(){
+  if(getAll().length>0) return;
+  const dists=[
+    {id:'D001',name:'Raj Distributors',phone:'+91 94471 00123',area:'Kottayam North',lat:'9.5916',lng:'76.5222',categories:['FMCG','Grocery'],dms:'Bizom',billing:'Tally',trucks:'4',radius:'30',dailyOrders:'45',minOrder:'500',nonbeat:'yes',activeOutlets:'120',wholesaleOutlets:'8',monthlyBiz:'18,00,000',brands:[{name:'Britannia',revenue:'600000',margin:'8',sp:'2'},{name:'Parle',revenue:'400000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94471 00124',digi:'yes',createdAt:'2025-05-20T10:30:00Z'},
+    {id:'D002',name:'Kerala Agro Traders',phone:'+91 94472 00456',area:'Changanacherry',lat:'9.4420',lng:'76.5361',categories:['Grocery','Oil','Staples'],dms:'Marg ERP',billing:'Busy',trucks:'2',radius:'20',dailyOrders:'30',minOrder:'1000',nonbeat:'no',activeOutlets:'65',wholesaleOutlets:'3',monthlyBiz:'9,50,000',brands:[{name:'Adani Wilmar (Fortune)',revenue:'300000',margin:'5',sp:'1'},{name:'Aashirvaad (ITC)',revenue:'250000',margin:'6',sp:'1'}],multibrand:'no',salesResp:'Self',salaryResp:'Self',spPhone:'+91 94472 00457',digi:'no',createdAt:'2025-05-22T14:00:00Z'},
+    {id:'D003',name:'Metro FMCG Hub',phone:'+91 94473 00789',area:'Ernakulam Central',lat:'9.9312',lng:'76.2673',categories:['FMCG','Beverages','Personal Care'],dms:'Distiman',billing:'Tally',trucks:'6',radius:'50',dailyOrders:'80',minOrder:'0',nonbeat:'yes',activeOutlets:'210',wholesaleOutlets:'15',monthlyBiz:'32,00,000',brands:[{name:'HUL (Hindustan Unilever)',revenue:'1200000',margin:'9',sp:'4'},{name:'ITC',revenue:'800000',margin:'8',sp:'2'},{name:'Nestlé',revenue:'500000',margin:'10',sp:'1'}],multibrand:'no',salesResp:'Company',salaryResp:'Company',spPhone:'+91 94473 00790',digi:'yes',createdAt:'2025-05-25T09:15:00Z'},
+    {id:'D004',name:'South Star Supplies',phone:'+91 94474 00321',area:'Thrissur South',lat:'10.5276',lng:'76.2144',categories:['FMCG','Oil'],dms:'',billing:'Vyapar',trucks:'3',radius:'25',dailyOrders:'35',minOrder:'750',nonbeat:'no',activeOutlets:'88',wholesaleOutlets:'5',monthlyBiz:'12,00,000',brands:[{name:'Colgate-Palmolive',revenue:'450000',margin:'11',sp:'2'}],multibrand:'yes',salesResp:'Both',salaryResp:'Both',spPhone:'+91 94474 00322',digi:'yes',createdAt:'2025-05-28T11:00:00Z'},
+    {id:'D005',name:'Palakkad Provisions',phone:'+91 94475 00654',area:'Palakkad Town',lat:'10.7867',lng:'76.6548',categories:['Grocery','Staples'],dms:'',billing:'Tally',trucks:'1',radius:'15',dailyOrders:'20',minOrder:'500',nonbeat:'no',activeOutlets:'42',wholesaleOutlets:'2',monthlyBiz:'4,50,000',brands:[{name:'MTR Foods',revenue:'180000',margin:'7',sp:'1'}],multibrand:'yes',salesResp:'Self',salaryResp:'Self',spPhone:'',digi:'no',createdAt:'2025-06-01T08:30:00Z'},
+  ];
+  dists.forEach(saveRecord);
+  const visits=[
+    {id:'V001',distId:'D001',date:'2025-05-20',startTime:'10:30',endTime:'11:45',lat:'9.5916',lng:'76.5222',status:'Interested',notes:'Very interested in DigiDukaan. Wants a demo. Has 120 active outlets — good reach.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-20T10:30:00Z',comments:[{id:'C001',by:'Rohan Menon',role:'Manager',text:'Good lead. Schedule a demo this week.',ts:'2025-05-20T15:00:00Z'}]},
+    {id:'V002',distId:'D001',date:'2025-06-01',startTime:'14:00',lat:'9.5918',lng:'76.5224',status:'Follow-up',notes:'Discussed pricing and onboarding terms. Owner wants 60-day credit period. Follow up needed.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-01T14:00:00Z',comments:[]},
+    {id:'V003',distId:'D002',date:'2025-05-22',startTime:'11:00',endTime:'12:00',lat:'9.4420',lng:'76.5361',status:'Rejected',notes:'Owner not interested in digital tools. Prefers manual billing. Revisit in 6 months.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-22T11:00:00Z',comments:[{id:'C002',by:'Rohan Menon',role:'Manager',text:'Note this as cold. Move on for now.',ts:'2025-05-22T16:00:00Z'}]},
+    {id:'V004',distId:'D003',date:'2025-05-25',startTime:'09:15',endTime:'10:30',lat:'9.9312',lng:'76.2673',status:'Interested',notes:'Large operation. Decision maker is Mr. Suresh (owner). Very open to DigiDukaan.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-25T09:15:00Z',comments:[]},
+    {id:'V005',distId:'D003',date:'2025-06-02',startTime:'10:00',endTime:'11:00',lat:'9.9315',lng:'76.2675',status:'Closed',notes:'Signed onboarding agreement. Mr. Suresh agreed to DigiDukaan pilot with HUL SKUs.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-02T10:00:00Z',comments:[{id:'C003',by:'Rohan Menon',role:'Manager',text:'Excellent! Initiate seller portal setup.',ts:'2025-06-02T13:00:00Z'}]},
+  ];
+  visits.forEach(saveVisit);
+  // seed audit log (visible to Admin)
+  const auditSeed=[
+    {id:'A001',distId:'D001',field:'digi',from:'no',to:'yes',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-01T14:30:00Z'},
+    {id:'A002',distId:'D001',field:'monthlyBiz',from:'15,00,000',to:'18,00,000',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-01T14:32:00Z'},
+    {id:'A003',distId:'D003',field:'trucks',from:'4',to:'6',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-02T10:15:00Z'},
+    {id:'A004',distId:'D003',field:'activeOutlets',from:'180',to:'210',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-06-02T10:16:00Z'},
+    {id:'A005',distId:'D004',field:'area',from:'Thrissur',to:'Thrissur South',by:'Priya Nair',role:'Vendor Sales Rep',ts:'2025-05-29T09:00:00Z'},
+  ];
+  const existing=JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]');
+  localStorage.setItem(AUDIT_KEY,JSON.stringify([...auditSeed,...existing]));
+}
+
+/* ── LOGIN ─────────────────────────────────────── */
+function selectRole(radio){
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  radio.closest('.role-card').classList.add('selected');
+}
+function doLogin(){
+  const role=document.querySelector('input[name="loginRole"]:checked')?.value||'sales';
+  currentUser=USERS[role];
+  document.getElementById('mainTopbar').style.display='flex';
+  document.getElementById('userName').textContent=currentUser.name;
+  document.getElementById('userAvatar').textContent=currentUser.avatar;
+  document.getElementById('userRoleBadge').textContent=currentUser.role;
+  // hide form tab for non-sales
+  if(role!=='sales') document.getElementById('vsw-form').style.display='none';
+  showView('dashboard');
+}
+function doLogout(){
+  currentUser=null;
+  document.getElementById('mainTopbar').style.display='none';
+  showView('login');
+}
+
+/* ── VIEW MANAGER ──────────────────────────────── */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.vsw-btn').forEach(b=>b.classList.remove('active'));
+  const vsw=document.getElementById('vsw-'+name); if(vsw)vsw.classList.add('active');
+  document.getElementById('saveChip').style.display=name==='form'?'flex':'none';
+  // hide the +New Visit tab while inside the form (you're already in it)
+  const newVisitBtn=document.getElementById('vsw-form');
+  if(newVisitBtn && currentUser?.short==='sales'){
+    newVisitBtn.style.display = name==='form' ? 'none' : 'block';
+  }
+  if(name==='dashboard')renderDashboard();
+  window.scrollTo(0,0);
+}
+
+/* ── FORM STATE ────────────────────────────────── */
+let currentStep=0; const TOTAL_STEPS=6;
+const ynState={};
+let brandRowId=1;
+let saveTimer;
+let editingDistId=null;  // null = new distributor, string = updating existing
+let visitStatus='';
+
+function startNewVisit(distId){
+  resetForm();
+  editingDistId=distId||null;
+  if(distId){
+    const rec=getById(distId);
+    if(rec) populateFormForEdit(rec);
+  }
+  // set today's date and current time by default
+  const now=new Date();
+  document.getElementById('f-visit-date').value=now.toISOString().split('T')[0];
+  document.getElementById('f-visit-start').value=now.toTimeString().slice(0,5);
+  updateVisitChips();
+  showView('form');
+}
+
+/* ── STEP NAV ──────────────────────────────────── */
+function goToStep(n){
+  if(n<0||n>=TOTAL_STEPS)return;
+  document.getElementById('fsec-'+currentStep).classList.remove('visible');
+  document.getElementById('ptab-'+currentStep).classList.remove('active');
+  currentStep=n;
+  document.getElementById('fsec-'+n).classList.add('visible');
+  document.getElementById('ptab-'+n).classList.add('active');
+  document.getElementById('btnBack').style.display=n>0?'block':'none';
+  const btn=document.getElementById('btnNext');
+  if(n===TOTAL_STEPS-1){
+    populateReview();
+    btn.className='btn-next submit';btn.innerHTML='Submit visit ✓';
+  } else {
+    btn.className='btn-next';
+    btn.innerHTML='Continue <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  }
+  window.scrollTo(0,0);
+}
+function nextStep(){ if(currentStep===TOTAL_STEPS-1){submitForm();return;} document.getElementById('ptab-'+currentStep).classList.add('done'); document.getElementById('pnum-'+currentStep).textContent='✓'; goToStep(currentStep+1); }
+function prevStep(){ if(currentStep>0)goToStep(currentStep-1); }
+
+/* ── CHIPS / RADIO / YN ────────────────────────── */
+function toggleChip(input,id){ document.getElementById(id).classList.toggle('on',input.checked); autosave(); }
+function toggleOtherCat(input){
+  const wrap=document.getElementById('other-cat-wrap');
+  wrap.style.display=input.checked?'block':'none';
+  if(input.checked) document.getElementById('f-other-cat').focus();
+  else document.getElementById('f-other-cat').value='';
+}
+function setYN(key,val){ ynState[key]=val; document.getElementById('yn-'+key+'-yes').classList.toggle('active',val==='yes'); document.getElementById('yn-'+key+'-no').classList.toggle('active',val==='no'); autosave(); }
+
+/* ── VISIT STATUS ──────────────────────────────── */
+function selectStatus(s){
+  visitStatus=s;
+  document.querySelectorAll('.status-opt').forEach(el=>{
+    const key=el.textContent.split(' ')[0];
+    el.className='status-opt'+(el.textContent.includes(s)?' sel-'+s:'');
+  });
+  autosave();
+}
+
+/* ── VISIT CHIPS ───────────────────────────────── */
+function updateVisitChips(){
+  const lat=document.getElementById('f-visit-lat')?.value;
+  const lng=document.getElementById('f-visit-lng')?.value;
+  const gpsChip=document.getElementById('visitGpsChip');
+  const timeChip=document.getElementById('visitTimeChip');
+  if(gpsChip) gpsChip.className='vs-chip'+(lat&&lng?' active-visit':'');
+  if(gpsChip) gpsChip.textContent=lat&&lng?`📍 ${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`:'📍 GPS not yet captured';
+  const t=document.getElementById('f-visit-start')?.value;
+  if(timeChip) timeChip.className='vs-chip'+(t?' active-visit':'');
+  if(timeChip) timeChip.textContent=t?`🕐 Started at ${t}`:'🕐 Time not set';
+}
+
+/* ── GPS ───────────────────────────────────────── */
+function captureVisitGPS(){
+  const btn=document.getElementById('visitGpsBtn');
+  btn.classList.add('loading');btn.textContent='Locating…';
+  if(!navigator.geolocation){showGpsAlert('visitGpsAlert','err','Not supported. Enter manually.');btn.classList.remove('loading');btn.textContent='Capture Now';return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      document.getElementById('f-visit-lat').value=pos.coords.latitude.toFixed(6);
+      document.getElementById('f-visit-lng').value=pos.coords.longitude.toFixed(6);
+      showGpsAlert('visitGpsAlert','ok','📍 Location captured · ±'+Math.round(pos.coords.accuracy)+'m');
+      btn.classList.remove('loading');btn.textContent='Re-capture';
+      updateVisitChips(); autosave();
+    },
+    ()=>{showGpsAlert('visitGpsAlert','err','Could not capture. Enter manually.');btn.classList.remove('loading');btn.textContent='Capture Now';}
+  );
+}
+function captureGPS(){
+  const btn=document.getElementById('gpsBtn');
+  btn.classList.add('loading');btn.textContent='Locating…';
+  if(!navigator.geolocation){showGpsAlert('gpsAlert','err','Not supported. Enter manually.');btn.classList.remove('loading');btn.textContent='Auto-capture';return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      document.getElementById('f-lat').value=pos.coords.latitude.toFixed(6);
+      document.getElementById('f-lng').value=pos.coords.longitude.toFixed(6);
+      showGpsAlert('gpsAlert','ok','📍 Location captured · ±'+Math.round(pos.coords.accuracy)+'m');
+      btn.classList.remove('loading');btn.textContent='Re-capture'; autosave();
+    },
+    ()=>{showGpsAlert('gpsAlert','err','Could not capture. Enter manually.');btn.classList.remove('loading');btn.textContent='Auto-capture';}
+  );
+}
+function showGpsAlert(id,type,msg){ const el=document.getElementById(id); if(!el)return; el.textContent=msg; el.className='gps-alert '+type; }
+
+/* ── BRAND TABLE ───────────────────────────────── */
+function addBrandRow(data){
+  const id=brandRowId++;
+  const tr=document.createElement('tr'); tr.id='brow-'+id;
+  tr.innerHTML=`<td><input type="text" list="brandList" placeholder="Type or pick brand…" value="${data?data.name:''}" autocomplete="off"/></td><td><input type="number" placeholder="0" value="${data?data.revenue:''}"/></td><td><input type="number" placeholder="0" min="0" max="100" value="${data?data.margin:''}"/></td><td><input type="number" placeholder="0" min="0" value="${data?data.sp:''}"/></td><td><button class="delbtn" onclick="delBrandRow(${id})" title="Remove">×</button></td>`;
+  document.getElementById('brandBody').appendChild(tr);
+  if(!data) tr.querySelector('input').focus();
+}
+function delBrandRow(id){ const b=document.getElementById('brandBody'); if(b.children.length<=1)return; document.getElementById('brow-'+id)?.remove(); }
+function getBrandData(){ return [...document.querySelectorAll('#brandBody tr')].map(tr=>{const i=tr.querySelectorAll('input');return{name:i[0].value.trim(),revenue:i[1].value,margin:i[2].value,sp:i[3].value};}).filter(b=>b.name); }
+
+/* ── AUTOSAVE ──────────────────────────────────── */
+function autosave(){ const d=document.getElementById('saveDot'),t=document.getElementById('saveText'); if(!d)return; d.className='save-dot pulse'; t.textContent='Unsaved'; clearTimeout(saveTimer); saveTimer=setTimeout(()=>{d.className='save-dot saved';t.textContent='Draft saved';},1200); }
+
+/* ── COLLECT FORM ──────────────────────────────── */
+function collectForm(){
+  const v=id=>document.getElementById(id)?.value?.trim()||'';
+  const cats=[...document.querySelectorAll('.chip.on input')].map(i=>{
+    if(i.value==='Other'){
+      const custom=v('f-other-cat');
+      return custom?`Other: ${custom}`:'Other';
+    }
+    return i.value;
+  });
+  const salesR=document.querySelector('input[name="salesResp"]:checked')?.value||'';
+  const salaryR=document.querySelector('input[name="salaryResp"]:checked')?.value||'';
+  const distId=editingDistId||(Date.now().toString(36).toUpperCase());
+  const dist={
+    id:distId,name:v('f-name'),phone:v('f-phone'),area:v('f-area'),
+    lat:v('f-lat'),lng:v('f-lng'),categories:cats,dms:v('f-dms'),billing:v('f-billing'),
+    trucks:v('f-trucks'),radius:v('f-radius'),dailyOrders:v('f-daily-orders'),minOrder:v('f-min-order'),
+    nonbeat:ynState.nonbeat||'',activeOutlets:v('f-active-outlets'),wholesaleOutlets:v('f-wholesale-outlets'),
+    monthlyBiz:v('f-monthly-biz'),brands:getBrandData(),multibrand:ynState.multibrand||'',
+    salesResp:salesR,salaryResp:salaryR,spPhone:v('f-sp-phone'),digi:ynState.digi||'',
+    createdAt:editingDistId?(getById(editingDistId)?.createdAt||new Date().toISOString()):new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+  };
+  const visit={
+    id:'V'+Date.now().toString(36).toUpperCase(),distId:distId,
+    date:v('f-visit-date'),startTime:v('f-visit-start'),endTime:v('f-visit-end'),
+    lat:v('f-visit-lat'),lng:v('f-visit-lng'),
+    status:visitStatus,notes:v('f-visit-notes'),
+    by:currentUser?.name||'Unknown',byRole:currentUser?.role||'',
+    createdAt:new Date().toISOString(),comments:[],
+  };
+  return{dist,visit};
+}
+
+/* ── REVIEW ────────────────────────────────────── */
+function populateReview(){
+  const {dist:d,visit:vs}=collectForm();
+  const set=(id,val)=>{const el=document.getElementById(id);if(!el)return;el.textContent=val||'—';el.className='rv'+(val?'':' empty');};
+  set('rv-vdate',vs.date);
+  set('rv-vtime',vs.startTime+(vs.endTime?' → '+vs.endTime:''));
+  set('rv-vgps',vs.lat&&vs.lng?vs.lat+', '+vs.lng:'');
+  set('rv-vstatus',vs.status);
+  set('rv-vnotes',vs.notes);
+  set('rv-name',d.name);set('rv-phone',d.phone);set('rv-area',d.area);
+  set('rv-gps',d.lat&&d.lng?d.lat+', '+d.lng:'');
+  set('rv-cats',d.categories.join(', '));
+  set('rv-tools',[d.dms,d.billing].filter(Boolean).join(' / '));
+  const bEl=document.getElementById('rv-brands');
+  bEl.innerHTML=d.brands.length?d.brands.map(b=>`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="font-weight:500;flex:1">${b.name}</span><span style="color:var(--ink-3)">₹${b.revenue||0}/mo</span><span style="color:var(--ink-3)">${b.margin||0}%</span></div>`).join(''):'<span style="color:#C4BAD4;font-style:italic;font-size:13px">No brands added</span>';
+  set('rv-salesresp',d.salesResp);set('rv-salaryresp',d.salaryResp);
+  const digiTxt=d.digi==='yes'?'✅ Interested':d.digi==='no'?'Not interested':'';
+  const dEl=document.getElementById('rv-digi'); if(dEl){dEl.textContent=digiTxt||'—';dEl.className='rv'+(d.digi==='yes'?' yes':'')+(digiTxt?'':' empty');}
+}
+
+/* ── SUBMIT ────────────────────────────────────── */
+function submitForm(){
+  const {dist,visit}=collectForm();
+  if(!dist.name){alert('Please enter the distributor name.');goToStep(1);return;}
+  saveRecord(dist, ['name','phone','area','lat','lng','trucks','radius','dailyOrders','minOrder','nonbeat','activeOutlets','wholesaleOutlets','monthlyBiz','salesResp','salaryResp','digi']);
+  saveVisit(visit);
+  document.getElementById('suc-name').textContent=dist.name;
+  document.getElementById('suc-status').textContent=visit.status||'—';
+  document.getElementById('suc-by').textContent=(currentUser?.name||'You')+' · just now';
+  document.getElementById('suc-digi').textContent=dist.digi==='yes'?'✅ Interested':dist.digi==='no'?'Not interested':'—';
+  document.getElementById('suc-digi').className='suc-v'+(dist.digi==='yes'?' suc-digi-yes':'');
+  document.getElementById('suc-view-dist').onclick=()=>showDetail(dist.id);
+  document.getElementById('bottomNav').style.display='none';
+  document.getElementById('saveChip').style.display='none';
+  [0,1,2,3,4,5].forEach(i=>{document.getElementById('ptab-'+i).classList.add('done');document.getElementById('pnum-'+i).textContent='✓';});
+  [0,1,2,3,4,5].forEach(i=>document.getElementById('fsec-'+i).classList.remove('visible'));
+  document.getElementById('fsec-success').classList.add('visible');
+  window.scrollTo(0,0);
+}
+
+/* ── RESET FORM ────────────────────────────────── */
+function resetForm(){
+  editingDistId=null;visitStatus='';
+  document.querySelectorAll('#view-form input[type=text],#view-form input[type=tel],#view-form input[type=number],#view-form input[type=date],#view-form input[type=time],#view-form textarea').forEach(i=>i.value='');
+  document.querySelectorAll('#view-form select').forEach(s=>s.value='');
+  document.querySelectorAll('.chip').forEach(c=>{c.classList.remove('on');c.querySelector('input').checked=false;});
+  document.querySelectorAll('#view-form input[type=radio]').forEach(r=>r.checked=false);
+  ['nonbeat','multibrand','digi'].forEach(k=>{ynState[k]=null;document.getElementById('yn-'+k+'-yes')?.classList.remove('active');document.getElementById('yn-'+k+'-no')?.classList.remove('active');});
+  document.querySelectorAll('.status-opt').forEach(el=>el.className='status-opt');
+  document.getElementById('brandBody').innerHTML='';brandRowId=1;addBrandRow();addBrandRow();
+  document.getElementById('gpsAlert').className='gps-alert';
+  document.getElementById('visitGpsAlert').className='gps-alert';
+  [0,1,2,3,4,5].forEach(i=>{const t=document.getElementById('ptab-'+i);t.classList.remove('done','active');document.getElementById('pnum-'+i).textContent=i+1;});
+  currentStep=0;
+  document.getElementById('fsec-success').classList.remove('visible');
+  document.getElementById('bottomNav').style.display='flex';
+  document.getElementById('saveChip').style.display='flex';
+  goToStep(0);
+}
+
+/* ── POPULATE EDIT ─────────────────────────────── */
+function populateFormForEdit(rec){
+  editingDistId=rec.id;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  set('f-name',rec.name);set('f-phone',rec.phone);set('f-area',rec.area);
+  set('f-lat',rec.lat);set('f-lng',rec.lng);
+  set('f-dms',rec.dms);set('f-billing',rec.billing);
+  set('f-trucks',rec.trucks);set('f-radius',rec.radius);
+  set('f-daily-orders',rec.dailyOrders);set('f-min-order',rec.minOrder);
+  set('f-active-outlets',rec.activeOutlets);set('f-wholesale-outlets',rec.wholesaleOutlets);
+  set('f-monthly-biz',rec.monthlyBiz);set('f-sp-phone',rec.spPhone);
+  (rec.categories||[]).forEach(cat=>{const c=document.getElementById('ch-'+cat);if(c){c.classList.add('on');c.querySelector('input').checked=true;}});
+  ['salesResp','salaryResp'].forEach(name=>{const val=name==='salesResp'?rec.salesResp:rec.salaryResp;const r=document.querySelector(`input[name="${name}"][value="${val}"]`);if(r)r.checked=true;});
+  if(rec.nonbeat)setYN('nonbeat',rec.nonbeat);
+  if(rec.multibrand)setYN('multibrand',rec.multibrand);
+  if(rec.digi)setYN('digi',rec.digi);
+  document.getElementById('brandBody').innerHTML='';brandRowId=1;
+  (rec.brands||[]).forEach(b=>addBrandRow(b));
+  if(!rec.brands||!rec.brands.length){addBrandRow();addBrandRow();}
+}
+
+/* ── DASHBOARD ─────────────────────────────────── */
+const PAGE_SIZE=10; let currentPage=1;
+function renderDashboard(){ renderStats(); renderTable(); }
+
+function renderStats(){
+  const all=getAll();
+  const digiYes=all.filter(r=>r.digi==='yes').length;
+  const trucks=all.reduce((s,r)=>s+(parseInt(r.trucks)||0),0);
+  const totalVisits=getAllVisits().length;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card accent"><div class="stat-lbl">Total distributors</div><div class="stat-val">${all.length}</div><div class="stat-sub">on record</div></div>
+    <div class="stat-card warn"><div class="stat-lbl">DigiDukaan leads</div><div class="stat-val">${digiYes}</div><div class="stat-sub">${all.length?Math.round(digiYes/all.length*100):0}% of total</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total visits</div><div class="stat-val">${totalVisits}</div><div class="stat-sub">across all distributors</div></div>
+    <div class="stat-card"><div class="stat-lbl">Active outlets</div><div class="stat-val">${all.reduce((s,r)=>s+(parseInt(r.activeOutlets)||0),0).toLocaleString()}</div><div class="stat-sub">total reach</div></div>`;
+}
+
+function filteredData(){
+  const q=(document.getElementById('searchInp')?.value||'').toLowerCase();
+  const cat=document.getElementById('filterCat')?.value||'';
+  const digi=document.getElementById('filterDigi')?.value||'';
+  return getAll().filter(r=>{
+    const mQ=!q||r.name.toLowerCase().includes(q)||(r.area||'').toLowerCase().includes(q)||(r.brands||[]).some(b=>b.name.toLowerCase().includes(q))||(r.phone||'').includes(q);
+    return mQ&&(!cat||(r.categories||[]).includes(cat))&&(!digi||r.digi===digi);
+  });
+}
+
+function renderTable(){
+  const data=filteredData(); const total=data.length;
+  const start=(currentPage-1)*PAGE_SIZE; const page=data.slice(start,start+PAGE_SIZE);
+  document.getElementById('resultsCount').textContent=total+' distributor'+(total!==1?'s':'');
+  const tbody=document.getElementById('distTbody'); const empty=document.getElementById('emptyState');
+  if(!page.length){tbody.innerHTML='';empty.style.display='block';document.getElementById('pagination').innerHTML='';return;}
+  empty.style.display='none';
+  tbody.innerHTML=page.map(r=>{
+    const visits=getVisits(r.id); const lastVisit=visits[0];
+    const lastStatus=lastVisit?lastVisit.status:'';
+    const statusBadge=lastStatus?`<span class="badge badge-status-${lastStatus}">${lastStatus}</span>`:'<span class="badge badge-pending">No visits</span>';
+    const digiBadge=r.digi==='yes'?'<span class="badge badge-yes">✓ Interested</span>':r.digi==='no'?'<span class="badge badge-no">No</span>':'<span class="badge badge-pending">—</span>';
+    const lastDt=lastVisit?new Date(lastVisit.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—';
+    return`<tr onclick="showDetail('${r.id}')">
+      <td><div class="td-name">${r.name}</div><div class="td-phone">${r.phone||''}</div></td>
+      <td class="td-hide">${r.area||'—'}</td>
+      <td class="td-hide">${statusBadge}</td>
+      <td class="td-mono td-hide" style="text-align:center">${visits.length}</td>
+      <td class="td-mono td-hide">${r.monthlyBiz?'₹'+r.monthlyBiz:'—'}</td>
+      <td>${digiBadge}</td>
+      <td class="td-date td-hide">${lastDt}</td>
+    </tr>`;
+  }).join('');
+  const pages=Math.ceil(total/PAGE_SIZE);
+  if(pages<=1){document.getElementById('pagination').innerHTML='';return;}
+  let pg=`<span>${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total}</span><div class="pg-btns">`;
+  pg+=`<button class="pg-btn" onclick="setPage(${currentPage-1})" ${currentPage===1?'disabled':''}>←</button>`;
+  for(let p=1;p<=pages;p++)pg+=`<button class="pg-btn${p===currentPage?' active':''}" onclick="setPage(${p})">${p}</button>`;
+  pg+=`<button class="pg-btn" onclick="setPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>→</button></div>`;
+  document.getElementById('pagination').innerHTML=pg;
+}
+function setPage(p){currentPage=p;renderTable();}
+
+/* ── DETAIL VIEW ───────────────────────────────── */
+function showDetail(id){
+  const r=getById(id); if(!r)return;
+  const visits=getVisits(id);
+  const initials=r.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  const catBadges=(r.categories||[]).map(c=>`<span class="badge badge-cat">${c}</span>`).join('');
+  const digiHtml=r.digi==='yes'?'<span class="badge badge-yes">✓ Interested in DigiDukaan</span>':r.digi==='no'?'<span class="badge badge-no">Not interested</span>':'<span class="badge badge-pending">Not recorded</span>';
+  const brands=r.brands||[];
+  const brandPills=brands.map(b=>`<div class="brand-pill"><strong>${b.name}</strong> · ₹${b.revenue||0}/mo · ${b.margin||0}% margin · ${b.sp||0} SP</div>`).join('');
+  const dt=r.createdAt?new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+  const canAddVisit=currentUser?.short==='sales';
+
+  // Build visit timeline HTML
+  const timelineHtml=visits.length?visits.map((v,i)=>{
+    const statusClass=`badge-status-${v.status}`;
+    const commentsHtml=(v.comments||[]).map(c=>`<div class="comment-item"><div class="comment-author">${c.by} · ${c.role}</div><div class="comment-text">${c.text}</div><div class="comment-ts">${new Date(c.ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></div>`).join('');
+    const canComment=currentUser?.short==='manager';
+    return`<div class="timeline-item">
+      <div class="tl-dot-wrap"><div class="tl-dot${i===0?' first':''}"></div>${i<visits.length-1?'<div class="tl-line"></div>':''}</div>
+      <div class="tl-body">
+        <div class="tl-head">
+          <span class="tl-title">Visit ${visits.length-i} &nbsp;<span class="badge ${statusClass}">${v.status||'—'}</span></span>
+          <span class="tl-date">${v.date} ${v.startTime?'· '+v.startTime:''}</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-by">👤 ${v.by}</span>
+          ${v.lat&&v.lng?`<span class="tl-gps">📍 ${parseFloat(v.lat).toFixed(4)}, ${parseFloat(v.lng).toFixed(4)}</span>`:''}
+          ${v.endTime?`<span class="tl-by">⏱ until ${v.endTime}</span>`:''}
+        </div>
+        ${v.notes?`<div class="tl-comment">${v.notes}</div>`:''}
+        ${commentsHtml?`<div class="comment-thread">${commentsHtml}</div>`:''}
+        ${canComment?`<div class="add-comment-wrap">
+          <textarea class="add-comment-inp" id="ci-${v.id}" placeholder="Add a comment or task for the sales rep…" rows="2"></textarea>
+          <div class="comment-row">
+            <button class="comment-submit-btn" onclick="postComment('${v.id}','${id}')">Post comment</button>
+            <button class="comment-cancel-btn" onclick="document.getElementById('ci-${v.id}').value=''">Clear</button>
+          </div>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join(''):`<div class="no-visits">No visits recorded yet.</div>`;
+
+  document.getElementById('detailContent').innerHTML=`
+    ${canAddVisit?`<div class="start-visit-wrap">
+      <div class="sv-txt"><div class="sv-title">Record a new visit</div><div class="sv-sub">GPS, time and notes will be captured</div></div>
+      <button class="start-visit-btn" onclick="startNewVisit('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Start Visit</button>
+    </div>`:''}
+    <div class="detail-hero">
+      <div class="detail-hero-row">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div class="detail-avatar">${initials}</div>
+          <div class="detail-name-block">
+            <div class="detail-name">${r.name}</div>
+            <div class="detail-meta-row">
+              ${r.phone?`<span class="dmeta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${r.phone}</span>`:''}
+              ${r.area?`<span class="dmeta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${r.area}</span>`:''}
+            </div>
+            <div class="detail-badges">${catBadges}${digiHtml}</div>
+          </div>
+        </div>
+        ${canAddVisit?`<button class="edit-btn" onclick="startNewVisit('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>New Visit</button>`:''}
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-section">
+        <div class="ds-head">Operations</div>
+        <div class="ds-row"><span class="ds-k">Trucks</span><span class="ds-v">${r.trucks||'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Radius</span><span class="ds-v">${r.radius?r.radius+' km':'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Daily orders/beat</span><span class="ds-v">${r.dailyOrders||'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Min. order</span><span class="ds-v">${r.minOrder?'₹'+r.minOrder:'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Non-beat</span><span class="ds-v ${r.nonbeat==='yes'?'yes':''}">${r.nonbeat?r.nonbeat.charAt(0).toUpperCase()+r.nonbeat.slice(1):'—'}</span></div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-head">Outlets &amp; Revenue</div>
+        <div class="ds-row"><span class="ds-k">Active outlets</span><span class="ds-v">${r.activeOutlets||'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Wholesale outlets</span><span class="ds-v">${r.wholesaleOutlets||'—'}</span></div>
+        <div class="ds-row"><span class="ds-k">Monthly business</span><span class="ds-v">${r.monthlyBiz?'₹'+r.monthlyBiz:'—'}</span></div>
+      </div>
+      <div class="detail-section full">
+        <div class="ds-head">Brand-wise Breakdown</div>
+        <div style="padding:10px 12px">${brands.length?`<div class="brand-pills">${brandPills}</div>`:'<span style="font-size:13px;color:#C4BAD4;font-style:italic">No brands recorded</span>'}</div>
+      </div>
+      <div class="detail-section full">
+        <div class="ds-head">Visit History (${visits.length} visit${visits.length!==1?'s':''})</div>
+        <div class="visit-timeline">${timelineHtml}</div>
+      </div>
+      <div class="detail-section full">
+        <div class="ds-head">Record Info</div>
+        <div class="ds-row"><span class="ds-k">Created</span><span class="ds-v">${dt}</span></div>
+        <div class="ds-row"><span class="ds-k">Record ID</span><span class="ds-v mono">${r.id}</span></div>
+        <div class="ds-row"><span class="ds-k">Tools</span><span class="ds-v">${[r.dms,r.billing].filter(Boolean).join(' / ')||'None recorded'}</span></div>
+      </div>
+      ${(()=>{
+        if(currentUser?.short!=='manager') return '';
+        const log=getAuditLog(id);
+        if(!log.length) return `<div class="detail-section full"><div class="ds-head">🛡️ Edit History</div><div class="no-visits">No edits recorded yet.</div></div>`;
+        const fieldLabel=f=>({name:'Distributor Name',phone:'Phone',area:'Area',lat:'Latitude',lng:'Longitude',trucks:'Trucks',radius:'Radius',dailyOrders:'Daily Orders',minOrder:'Min. Order',nonbeat:'Non-beat orders',activeOutlets:'Active Outlets',wholesaleOutlets:'Wholesale Outlets',monthlyBiz:'Monthly Business',salesResp:'Sales Resp.',salaryResp:'Salary Resp.',digi:'DigiDukaan interest'}[f]||f);
+        const rows=log.map(a=>`<div class="audit-row">
+          <span class="audit-who">${a.by}</span>
+          <span class="audit-what">Changed <strong>${fieldLabel(a.field)}</strong> from <em>"${a.from}"</em> to <em>"${a.to}"</em></span>
+          <span class="audit-when">${new Date(a.ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+        </div>`).join('');
+        return `<div class="detail-section full"><div class="ds-head">🛡️ Edit History (${log.length} change${log.length!==1?'s':''})</div>${rows}</div>`;
+      })()}
+    </div>
+    ${currentUser?.short==='sales'?`<div style="margin-top:4px">
+      <button onclick="confirmDelete('${r.id}')" style="display:flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:500;color:var(--error);background:var(--surface);cursor:pointer;transition:all .15s" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='var(--surface)'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete record
+      </button>
+    </div>`:``}
+  `;
+  showView('detail');
+}
+
+/* ── COMMENT ───────────────────────────────────── */
+function postComment(visitId,distId){
+  const inp=document.getElementById('ci-'+visitId);
+  const text=inp?.value?.trim(); if(!text)return;
+  const allVisits=getAllVisits();
+  const v=allVisits.find(v=>v.id===visitId); if(!v)return;
+  v.comments=v.comments||[];
+  v.comments.push({id:'C'+Date.now().toString(36),by:currentUser?.name||'Manager',role:currentUser?.role||'',text,ts:new Date().toISOString()});
+  localStorage.setItem(VISIT_KEY,JSON.stringify(allVisits));
+  showDetail(distId);
+}
+
+function confirmDelete(id){
+  const rec=getById(id);if(!rec)return;
+  if(confirm(`Delete "${rec.name}"? This cannot be undone.`)){deleteRecord(id);showView('dashboard');}
+}
+
+/* ── INIT ──────────────────────────────────────── */
+(function init(){
+  seedIfEmpty();
+  addBrandRow();addBrandRow();
+})();
+</script>
+</body>
+</html>
