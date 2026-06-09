@@ -447,8 +447,8 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
   /* Bottom nav */
   .mobile-bottom-nav{display:block}
 
-  /* Add bottom padding so content isn't under the nav */
-  .view.active{padding-bottom:calc(60px + env(safe-area-inset-bottom,0))}
+  /* Add bottom padding so content isn't under the mobile nav — but not in form (has own nav) */
+  .view.active:not(#view-form){padding-bottom:calc(60px + env(safe-area-inset-bottom,0))}
   .bottom-nav{padding-bottom:calc(10px + env(safe-area-inset-bottom,0))}
 
   /* Dashboard — switch to card list, hide table */
@@ -1162,13 +1162,14 @@ function showView(name){
   if(newVisitBtn && currentUser?.short==='sales'){
     newVisitBtn.style.display = name==='form' ? 'none' : 'block';
   }
-  // Mobile bottom nav active state + hide New Visit when in form
+  // Mobile bottom nav: hide entirely inside the form so it doesn't cover Back/Submit
+  const mobileNav=document.getElementById('mobileBottomNav');
+  if(mobileNav && currentUser){
+    mobileNav.style.display = name==='form' ? 'none' : 'block';
+  }
+  // Mobile bottom nav active state
   document.querySelectorAll('.mbn-item').forEach(b=>b.classList.remove('active'));
   const mbn=document.getElementById('mbn-'+name); if(mbn)mbn.classList.add('active');
-  const mbnNew=document.getElementById('mbn-newvisit');
-  if(mbnNew && currentUser?.short==='sales'){
-    mbnNew.style.display = name==='form' ? 'none' : 'flex';
-  }
   if(name==='dashboard') renderDashboard();
   if(name==='settings') renderSettings();
   window.scrollTo(0,0);
