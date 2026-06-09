@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Qwipo · Distributor CRM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -171,7 +171,7 @@ textarea.finput{resize:none;min-height:56px;line-height:1.55}
 .status-opts{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
 .status-opt{padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);transition:all .15s;user-select:none}
 .status-opt.sel-Interested{border-color:var(--success);background:var(--success-bg);color:var(--success)}
-.status-opt.sel-Follow-up{border-color:#0284C7;background:#F0F9FF;color:#0284C7}
+.status-opt.sel-Follow-up-Required{border-color:#0284C7;background:#F0F9FF;color:#0284C7}
 .status-opt.sel-Closed{border-color:var(--p);background:var(--p-light);color:var(--p)}
 .status-opt.sel-Rejected{border-color:var(--error);background:var(--error-bg);color:var(--error)}
 
@@ -265,7 +265,7 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
 .badge-pending{background:var(--bg);color:var(--ink-3)}
 .badge-more{background:var(--bg);color:var(--ink-3);font-size:10px;border:1px solid var(--border)}
 .badge-status-Interested{background:var(--success-bg);color:var(--success)}
-.badge-status-Follow-up{background:#F0F9FF;color:#0284C7}
+.badge-status-Follow-up-Required{background:#F0F9FF;color:#0284C7}
 .badge-status-Closed{background:var(--p-light);color:var(--p)}
 .badge-status-Rejected{background:var(--error-bg);color:var(--error)}
 .td-mono{font-family:var(--mono);font-size:12px}
@@ -379,15 +379,103 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
 /* ── NOTES BOX ───────────────────────────────── */
 .notes-box{padding:12px 14px;font-size:13px;color:var(--ink-2);line-height:1.6;background:var(--bg);border-radius:0 0 var(--r) var(--r)}
 
+/* ── MOBILE BOTTOM NAV ─────────────────────── */
+.mobile-bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:0 0 env(safe-area-inset-bottom,0);
+  height:calc(60px + env(safe-area-inset-bottom,0));
+}
+.mobile-bottom-nav-inner{
+  display:flex;height:60px;
+}
+.mbn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:transparent;font-family:var(--font);
+  font-size:10px;font-weight:600;color:var(--ink-3);cursor:pointer;
+  transition:color .15s;padding:0;
+  -webkit-tap-highlight-color:transparent;
+  min-height:44px;
+}
+.mbn-item.active{color:var(--p)}
+.mbn-icon{font-size:20px;line-height:1}
+.mbn-item.mbn-new{color:var(--surface)}
+.mbn-new-inner{
+  background:var(--p);border-radius:14px;
+  padding:6px 14px;display:flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;color:#fff;
+  white-space:nowrap;margin-top:-2px;
+}
+
+/* ── MOBILE DIST CARD LIST ─────────────────── */
+.dist-card-list{display:none;flex-direction:column;gap:0}
+.dist-card-item{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:14px 16px;cursor:pointer;transition:background .1s;
+  display:flex;align-items:flex-start;gap:12px;
+  -webkit-tap-highlight-color:transparent;
+}
+.dist-card-item:active{background:var(--p-faint)}
+.dist-card-item:first-child{border-top:1px solid var(--border)}
+.dist-card-avatar{
+  width:40px;height:40px;border-radius:50%;background:var(--p-light);
+  color:var(--p);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;
+}
+.dist-card-body{flex:1;min-width:0}
+.dist-card-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dist-card-meta{font-size:12px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.dist-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.dist-card-chevron{color:var(--border-2);flex-shrink:0;font-size:18px;margin-top:8px}
+
 /* ── RESPONSIVE ──────────────────────────── */
 @media(max-width:600px){
+  /* Layout */
   .detail-grid{grid-template-columns:1fr}
   .detail-section.full{grid-column:auto}
   .stats-row{grid-template-columns:1fr 1fr}
   .field-2{grid-template-columns:1fr}
   .field-2 .field:first-child{border-right:none}
-  table.dist-tbl .td-hide{display:none}
   .topbar,.form-body,.dash-body,.detail-body{padding-left:12px;padding-right:12px}
+
+  /* Topbar — hide desktop nav switcher, show minimal bar */
+  .vsw{display:none}
+  .topbar{height:48px}
+
+  /* Bottom nav */
+  .mobile-bottom-nav{display:block}
+
+  /* Add bottom padding so content isn't under the nav */
+  .view.active{padding-bottom:calc(60px + env(safe-area-inset-bottom,0))}
+  .bottom-nav{padding-bottom:calc(10px + env(safe-area-inset-bottom,0))}
+
+  /* Dashboard — switch to card list, hide table */
+  .table-wrap .dist-tbl,.table-wrap thead{display:none}
+  .dist-card-list{display:flex}
+
+  /* Bigger touch targets on key buttons */
+  .btn-back,.btn-next,.gps-btn{min-height:44px}
+  .chip{padding:8px 14px;font-size:14px}
+  .status-opt{padding:9px 14px;font-size:14px}
+  .yn-btn{padding:10px 18px;font-size:14px}
+
+  /* Toolbar — stack search + filters */
+  .dash-toolbar{flex-direction:column;align-items:stretch}
+  .filter-select{width:100%}
+
+  /* Radio opts — stack on mobile */
+  .radio-opts{flex-direction:column}
+  .radio-opt{border-right:none!important;border-bottom:1px solid var(--border)}
+  .radio-opt:last-child{border-bottom:none}
+
+  /* Form progress tabs — slightly larger tap area */
+  .ptab{padding:12px 14px;font-size:12px}
+
+  /* Detail back button — bigger */
+  .detail-back{padding:10px 0}
+  .ds-k{width:100px}
 }
 @media(max-width:400px){.stats-row{grid-template-columns:1fr}}
 </style>
@@ -424,7 +512,8 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
       <div class="login-note">
         <strong>Prototype credentials</strong><br/>
         Sales Rep: priya@qwipo.com / sales123<br/>
-        Manager: rohan@qwipo.com / mgr123
+        Manager: rohan@qwipo.com / mgr123<br/>
+        <span style="color:var(--ink-3);font-size:10px;margin-top:4px;display:block">You stay signed in until your account is deactivated.</span>
       </div>
     </div>
   </div>
@@ -455,7 +544,31 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
   </div>
 </div>
 
-<!-- ═══════════════ FORM VIEW ═════════════════ -->
+<!-- ═══════════════ MOBILE BOTTOM NAV ════════ -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav" style="display:none">
+  <div class="mobile-bottom-nav-inner">
+    <button class="mbn-item active" id="mbn-dashboard" onclick="showView('dashboard')">
+      <span class="mbn-icon">⊞</span>
+      <span>Dashboard</span>
+    </button>
+    <button class="mbn-item mbn-new" id="mbn-newvisit" onclick="startNewVisit()">
+      <div class="mbn-new-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+        New Visit
+      </div>
+    </button>
+    <button class="mbn-item" id="mbn-settings" onclick="showView('settings')" style="display:none">
+      <span class="mbn-icon">⚙</span>
+      <span>Settings</span>
+    </button>
+    <button class="mbn-item" id="mbn-logout" onclick="doLogout()">
+      <span class="mbn-icon">⏏</span>
+      <span>Sign out</span>
+    </button>
+  </div>
+</nav>
+
+
 <div class="view" id="view-form">
   <div class="progress-bar-wrap">
     <div class="progress-tabs">
@@ -514,7 +627,7 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
         <div class="chips-lbl">Visit Status <span class="req">*</span></div>
         <div class="status-opts" id="statusOpts">
           <span class="status-opt" onclick="selectStatus('Interested')">Interested</span>
-          <span class="status-opt" onclick="selectStatus('Follow-up')">Follow-up Required</span>
+          <span class="status-opt" onclick="selectStatus('Follow-up Required')">Follow-up Required</span>
           <span class="status-opt" onclick="selectStatus('Closed')">Closed / Onboarded</span>
           <span class="status-opt" onclick="selectStatus('Rejected')">Rejected</span>
         </div>
@@ -785,6 +898,7 @@ table.dist-tbl tbody td{padding:10px 12px;vertical-align:middle}
         </tr></thead>
         <tbody id="distTbody"></tbody>
       </table>
+      <div class="dist-card-list" id="distCardList"></div>
       <div class="empty-state" id="emptyState" style="display:none">
         <div class="empty-icon">📋</div>
         <div class="empty-title">No distributors yet</div>
@@ -957,7 +1071,7 @@ function seedIfEmpty(){
   dists.forEach(saveRecord);
   const visits=[
     {id:'V001',distId:'D001',date:'2025-05-20',startTime:'10:30',lat:'9.5916',lng:'76.5222',status:'Interested',notes:'Very interested in DigiDukaan. Wants a demo. Has 120 active outlets — good reach.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-20T10:30:00Z',comments:[{id:'C001',by:'Rohan Menon',role:'Manager',text:'Good lead. Schedule a demo this week.',ts:'2025-05-20T15:00:00Z'}]},
-    {id:'V002',distId:'D001',date:'2025-06-01',startTime:'14:00',lat:'9.5918',lng:'76.5224',status:'Follow-up',notes:'Discussed pricing and onboarding terms. Owner wants 60-day credit period. Follow up needed.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-01T14:00:00Z',comments:[]},
+    {id:'V002',distId:'D001',date:'2025-06-01',startTime:'14:00',lat:'9.5918',lng:'76.5224',status:'Follow-up Required',notes:'Discussed pricing and onboarding terms. Owner wants 60-day credit period. Follow up needed.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-01T14:00:00Z',comments:[]},
     {id:'V003',distId:'D002',date:'2025-05-22',startTime:'11:00',lat:'9.4420',lng:'76.5361',status:'Rejected',notes:'Owner not interested in digital tools. Prefers manual billing. Revisit in 6 months.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-22T11:00:00Z',comments:[{id:'C002',by:'Rohan Menon',role:'Manager',text:'Note this as cold. Move on for now.',ts:'2025-05-22T16:00:00Z'}]},
     {id:'V004',distId:'D003',date:'2025-05-25',startTime:'09:15',lat:'9.9312',lng:'76.2673',status:'Interested',notes:'Large operation. Decision maker is Mr. Suresh (owner). Very open to DigiDukaan.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-05-25T09:15:00Z',comments:[]},
     {id:'V005',distId:'D003',date:'2025-06-02',startTime:'10:00',lat:'9.9315',lng:'76.2675',status:'Closed',notes:'Signed onboarding agreement. Mr. Suresh agreed to DigiDukaan pilot with HUL SKUs.',by:'Priya Nair',byRole:'Vendor Sales Rep',createdAt:'2025-06-02T10:00:00Z',comments:[{id:'C003',by:'Rohan Menon',role:'Manager',text:'Excellent! Initiate seller portal setup.',ts:'2025-06-02T13:00:00Z'}]},
@@ -1008,6 +1122,7 @@ function doLogin(){
   errEl.style.display='none';
   currentUser=match.user;
   document.getElementById('mainTopbar').style.display='flex';
+  document.getElementById('mobileBottomNav').style.display='block';
   document.getElementById('userName').textContent=currentUser.name;
   document.getElementById('userAvatar').textContent=currentUser.avatar;
   document.getElementById('userRoleBadge').textContent=currentUser.role;
@@ -1015,18 +1130,23 @@ function doLogin(){
   if(currentUser.short==='manager'){
     document.getElementById('vsw-settings').style.display='block';
     document.getElementById('vsw-form').style.display='none';
+    document.getElementById('mbn-settings').style.display='flex';
+    document.getElementById('mbn-newvisit').style.display='none';
   }
   showView('dashboard');
 }
 function doLogout(){
   currentUser=null;
   document.getElementById('mainTopbar').style.display='none';
+  document.getElementById('mobileBottomNav').style.display='none';
   document.getElementById('loginEmail').value='';
   document.getElementById('loginPassword').value='';
   document.getElementById('loginError').style.display='none';
   // reset topbar tabs
   document.getElementById('vsw-settings').style.display='none';
   document.getElementById('vsw-form').style.display='block';
+  document.getElementById('mbn-settings').style.display='none';
+  document.getElementById('mbn-newvisit').style.display='flex';
   showView('login');
 }
 
@@ -1037,9 +1157,17 @@ function showView(name){
   document.querySelectorAll('.vsw-btn').forEach(b=>b.classList.remove('active'));
   const vsw=document.getElementById('vsw-'+name); if(vsw)vsw.classList.add('active');
   document.getElementById('saveChip').style.display=name==='form'?'flex':'none';
+  // Desktop: hide +New Visit when inside the form (BR-5)
   const newVisitBtn=document.getElementById('vsw-form');
   if(newVisitBtn && currentUser?.short==='sales'){
     newVisitBtn.style.display = name==='form' ? 'none' : 'block';
+  }
+  // Mobile bottom nav active state + hide New Visit when in form
+  document.querySelectorAll('.mbn-item').forEach(b=>b.classList.remove('active'));
+  const mbn=document.getElementById('mbn-'+name); if(mbn)mbn.classList.add('active');
+  const mbnNew=document.getElementById('mbn-newvisit');
+  if(mbnNew && currentUser?.short==='sales'){
+    mbnNew.style.display = name==='form' ? 'none' : 'flex';
   }
   if(name==='dashboard') renderDashboard();
   if(name==='settings') renderSettings();
@@ -1104,9 +1232,10 @@ function setYN(key,val){ ynState[key]=val; document.getElementById('yn-'+key+'-y
 /* ── VISIT STATUS ──────────────────────────────── */
 function selectStatus(s){
   visitStatus=s;
+  const cssKey=s.replace(/[\s\/]+/g,'-');
   document.querySelectorAll('.status-opt').forEach(el=>{
-    const key=el.textContent.split(' ')[0];
-    el.className='status-opt'+(el.textContent.includes(s)?' sel-'+s:'');
+    const isSelected=el.textContent.trim()===s||el.getAttribute('onclick')==='selectStatus(\''+s+'\')';
+    el.className='status-opt'+(isSelected?' sel-'+cssKey:'');
   });
   autosave();
 }
@@ -1322,12 +1451,13 @@ function renderTable(){
   const start=(currentPage-1)*PAGE_SIZE; const page=data.slice(start,start+PAGE_SIZE);
   document.getElementById('resultsCount').textContent=total+' distributor'+(total!==1?'s':'');
   const tbody=document.getElementById('distTbody'); const empty=document.getElementById('emptyState');
-  if(!page.length){tbody.innerHTML='';empty.style.display='block';document.getElementById('pagination').innerHTML='';return;}
+  if(!page.length){tbody.innerHTML='';empty.style.display='block';document.getElementById('pagination').innerHTML='';renderCardList([]);return;}
   empty.style.display='none';
   tbody.innerHTML=page.map(r=>{
     const visits=getVisits(r.id); const lastVisit=visits[0];
     const lastStatus=lastVisit?lastVisit.status:'';
-    const statusBadge=lastStatus?`<span class="badge badge-status-${lastStatus}">${lastStatus}</span>`:'<span class="badge badge-pending">No visits</span>';
+    const statusCssKey=lastStatus.replace(/[\s\/]+/g,'-');
+    const statusBadge=lastStatus?`<span class="badge badge-status-${statusCssKey}">${lastStatus}</span>`:'<span class="badge badge-pending">No visits</span>';
     const digiBadge=r.digi==='yes'?'<span class="badge badge-yes">✓ Interested</span>':r.digi==='no'?'<span class="badge badge-no">No</span>':'<span class="badge badge-pending">—</span>';
     const lastDt=lastVisit?new Date(lastVisit.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—';
     return`<tr onclick="showDetail('${r.id}')">
@@ -1340,6 +1470,7 @@ function renderTable(){
       <td class="td-date td-hide">${lastDt}</td>
     </tr>`;
   }).join('');
+  renderCardList(page);
   const pages=Math.ceil(total/PAGE_SIZE);
   if(pages<=1){document.getElementById('pagination').innerHTML='';return;}
   let pg=`<span>${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total}</span><div class="pg-btns">`;
@@ -1348,6 +1479,44 @@ function renderTable(){
   pg+=`<button class="pg-btn" onclick="setPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>→</button></div>`;
   document.getElementById('pagination').innerHTML=pg;
 }
+
+function renderCardList(page){
+  const el=document.getElementById('distCardList'); if(!el)return;
+  if(!page.length){el.innerHTML='';return;}
+  el.innerHTML=page.map(r=>{
+    const visits=getVisits(r.id); const lastVisit=visits[0];
+    const lastStatus=lastVisit?lastVisit.status:'';
+    const statusCssKey=lastStatus.replace(/[\s\/]+/g,'-');
+    const statusBadge=lastStatus?`<span class="badge badge-status-${statusCssKey}">${lastStatus}</span>`:'<span class="badge badge-pending">No visits</span>';
+    const digiBadge=r.digi==='yes'?'<span class="badge badge-yes">✓ DigiDukaan</span>':r.digi==='no'?'<span class="badge badge-no" style="font-size:10px">Not interested</span>':'';
+    const lastDt=lastVisit?new Date(lastVisit.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—';
+    const initials=r.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const biz=r.monthlyBiz?'₹'+Number(r.monthlyBiz).toLocaleString('en-IN'):'';
+    return`<div class="dist-card-item" onclick="showDetail('${r.id}')">
+      <div class="dist-card-avatar">${initials}</div>
+      <div class="dist-card-body">
+        <div class="dist-card-name">${r.name}</div>
+        <div class="dist-card-meta">
+          ${r.phone?`<span style="font-family:var(--mono);font-size:11px">${r.phone}</span>`:''}
+          ${r.area?`<span>· ${r.area}</span>`:''}
+        </div>
+        <div class="dist-card-footer">
+          <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+            ${statusBadge}
+            ${digiBadge}
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--ink-3)">
+            ${biz?`<span>${biz}</span>`:''}
+            <span>${visits.length} visit${visits.length!==1?'s':''}</span>
+            <span>${lastDt}</span>
+          </div>
+        </div>
+      </div>
+      <div class="dist-card-chevron">›</div>
+    </div>`;
+  }).join('');
+}
+
 function setPage(p){currentPage=p;renderTable();}
 
 /* ── DETAIL VIEW ───────────────────────────────── */
@@ -1364,7 +1533,8 @@ function showDetail(id){
 
   // Build visit timeline HTML
   const timelineHtml=visits.length?visits.map((v,i)=>{
-    const statusClass=`badge-status-${v.status}`;
+    const statusCssKey=(v.status||'').replace(/[\s\/]+/g,'-');
+    const statusClass=`badge-status-${statusCssKey}`;
     const commentsHtml=(v.comments||[]).map(c=>`<div class="comment-item"><div class="comment-author">${c.by} · ${c.role}</div><div class="comment-text">${c.text}</div><div class="comment-ts">${new Date(c.ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></div>`).join('');
     const canComment=currentUser?.short==='manager';
     return`<div class="timeline-item">
