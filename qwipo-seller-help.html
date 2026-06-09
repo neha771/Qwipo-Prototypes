@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Qwipo Seller Store — Seller Help Centre</title>
+<style>
+  :root {
+    --blue:        #0066CC;
+    --blue-dark:   #004EA8;
+    --blue-light:  #E8F0FB;
+    --green:       #1B8A4C;
+    --green-dark:  #146038;
+    --green-light: #E8F5EE;
+    --orange:      #FF6600;
+    --orange-light:#FFF3E0;
+    --dark:        #111827;
+    --body:        #374151;
+    --muted:       #6B7280;
+    --border:      #E5E7EB;
+    --bg:          #F9FAFB;
+    --white:       #FFFFFF;
+    --radius:      12px;
+    --shadow:      0 4px 24px rgba(0,0,0,0.08);
+    --shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif; color: var(--body); background: var(--bg); line-height: 1.6; }
+
+  /* ── ROLE SWITCHER BAR ── */
+  .role-bar {
+    background: var(--dark); color: rgba(255,255,255,0.6);
+    text-align: center; padding: 9px 24px; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .role-bar strong { color: #7EEDA4; }
+  .role-bar a {
+    color: rgba(255,255,255,0.5); font-size: 12px;
+    margin-left: 16px; text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 3px 12px; border-radius: 20px; transition: all 0.15s;
+  }
+  .role-bar a:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.4); }
+
+  /* ── NAVBAR ── */
+  .navbar { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 64px; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark { width: 36px; height: 36px; border-radius: 8px; background: var(--green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--white); }
+  .logo-text { font-weight: 700; font-size: 16px; color: var(--dark); }
+  .logo-text span { color: var(--green); }
+  .logo-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: var(--green-light); color: var(--green); border: 1px solid rgba(27,138,76,0.2); padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+  .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--body); font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px; transition: all 0.15s; }
+  .nav-links a:hover { background: var(--green-light); color: var(--green); }
+  .btn-support { background: var(--orange) !important; color: var(--white) !important; border-radius: 8px !important; font-weight: 600 !important; }
+  .btn-support:hover { background: #E55A00 !important; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 55%, #2ECC71 100%); color: var(--white); padding: 72px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-content { position: relative; max-width: 660px; margin: 0 auto; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 5px 14px; font-size: 13px; margin-bottom: 20px; }
+  .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: #AAFFCC; display: inline-block; }
+  .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.15; margin-bottom: 14px; letter-spacing: -0.5px; }
+  .hero h1 em { font-style: normal; color: #AAFFCC; }
+  .hero p { font-size: 17px; opacity: 0.88; max-width: 500px; margin: 0 auto 32px; }
+  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-btn { padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+  .hero-btn-primary { background: var(--white); color: var(--green-dark); }
+  .hero-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .hero-btn-outline { background: rgba(255,255,255,0.12); color: var(--white); border: 1.5px solid rgba(255,255,255,0.4); }
+  .hero-btn-outline:hover { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  .hero-steps { display: flex; gap: 0; justify-content: center; margin-top: 52px; flex-wrap: wrap; }
+  .hero-step { display: flex; align-items: center; gap: 8px; }
+  .hero-step-dot { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+  .hero-step-label { font-size: 12px; opacity: 0.85; white-space: nowrap; }
+  .hero-step-arrow { font-size: 11px; opacity: 0.4; margin: 0 10px; }
+
+  /* ── SECTION ── */
+  .section { padding: 72px 24px; }
+  .section:nth-child(even) { background: var(--white); }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 48px; }
+  .section-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green); background: var(--green-light); padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
+  .section-title { font-size: 30px; font-weight: 800; color: var(--dark); line-height: 1.2; }
+  .section-subtitle { font-size: 16px; color: var(--muted); margin-top: 8px; }
+
+  /* ── VIDEO GRID ── */
+  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .video-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; transition: all 0.2s; box-shadow: var(--shadow-sm); }
+  .video-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .video-thumb { position: relative; height: 185px; background: linear-gradient(135deg, #0E4F2B 0%, var(--green) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 12px; overflow: hidden; }
+  .video-thumb::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%); }
+  .video-num-badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--white); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .video-duration-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.4); color: var(--white); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+  .play-btn { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2.5px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; z-index: 1; }
+  .play-btn svg { fill: white; width: 22px; height: 22px; margin-left: 3px; }
+  .video-thumb:hover .play-btn { background: var(--orange); border-color: var(--orange); transform: scale(1.1); }
+  .video-thumb-title { color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; text-align: center; padding: 0 20px; line-height: 1.35; position: relative; z-index: 1; }
+  .video-body { padding: 18px 20px 20px; }
+  .video-series { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+  .video-title { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 6px; line-height: 1.3; }
+  .video-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+  .watch-btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; background: var(--green-light); color: var(--green); font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+  .watch-btn:hover { background: var(--green); color: var(--white); }
+  .watch-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.82); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--dark); border-radius: 14px; overflow: hidden; width: 90%; max-width: 860px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); position: relative; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .modal-title { font-size: 15px; font-weight: 600; color: var(--white); }
+  .modal-series { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); border: none; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; line-height: 1; }
+  .modal-close:hover { background: rgba(255,255,255,0.2); }
+  .modal-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+  .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+  .modal-coming-soon { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: linear-gradient(135deg, #0E4F2B, var(--green)); }
+  .modal-coming-soon h3 { color: white; font-size: 20px; font-weight: 700; }
+  .modal-coming-soon p { color: rgba(255,255,255,0.65); font-size: 14px; text-align: center; padding: 0 40px; line-height: 1.6; }
+  .modal-footer { padding: 12px 20px; }
+  .modal-footer p { font-size: 12px; color: rgba(255,255,255,0.35); }
+  .modal-footer code { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 4px; }
+
+  /* ── GUIDE CARD ── */
+  .guide-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow-sm); max-width: 680px; margin: 0 auto; }
+  .guide-header { padding: 32px 32px 24px; background: linear-gradient(135deg, #0E4F2B, var(--green)); }
+  .guide-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 16px; }
+  .guide-header h3 { font-size: 22px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .guide-header p { font-size: 14px; color: rgba(255,255,255,0.75); }
+  .guide-body { padding: 24px 32px 28px; }
+  .guide-meta { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .guide-chip { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; }
+  .guide-sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+  .guide-section-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); background: var(--green-light); border-radius: 8px; padding: 8px 12px; }
+  .guide-section-item::before { content: '✓'; font-weight: 700; color: var(--green); font-size: 12px; flex-shrink: 0; }
+  .guide-downloads { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dl-btn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.15s; }
+  .dl-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .dl-btn-primary { background: var(--green); color: white; }
+  .dl-btn-primary:hover { background: var(--green-dark); }
+  .dl-btn-outline { background: var(--bg); color: var(--body); border: 1px solid var(--border); }
+  .dl-btn-outline:hover { background: var(--border); }
+  .dl-format { font-size: 11px; opacity: 0.6; font-weight: 400; }
+
+  /* ── FAQ ── */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; max-width: 760px; margin: 0 auto; }
+  .faq-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .faq-item.open { border-color: var(--green); }
+  .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; gap: 12px; }
+  .faq-q-text { font-size: 15px; font-weight: 600; color: var(--dark); line-height: 1.35; }
+  .faq-toggle { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .faq-item.open .faq-toggle { background: var(--green); border-color: var(--green); transform: rotate(45deg); }
+  .faq-toggle svg { width: 14px; height: 14px; fill: var(--muted); }
+  .faq-item.open .faq-toggle svg { fill: white; }
+  .faq-a { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+  .faq-item.open .faq-a { max-height: 300px; padding: 0 20px 18px; }
+  .faq-a p { font-size: 14px; color: var(--body); line-height: 1.65; }
+  .faq-a strong { color: var(--dark); }
+
+  /* ── SUPPORT ── */
+  #support { background: linear-gradient(135deg, var(--green-dark) 0%, #1A6B3E 100%); }
+  #support .section-label { color: #AAFFCC; background: rgba(170,255,204,0.15); }
+  #support .section-title { color: var(--white); }
+  #support .section-subtitle { color: rgba(255,255,255,0.65); }
+  .support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 840px; margin: 0 auto; }
+  .support-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 28px 24px; text-align: center; transition: all 0.2s; text-decoration: none; display: block; }
+  .support-card:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+  .support-icon { width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .support-card h4 { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .support-card p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; margin-bottom: 16px; }
+  .support-link { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #AAFFCC; }
+  .support-link svg { width: 14px; height: 14px; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--dark); padding: 28px 24px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-brand .logo-mark { width: 28px; height: 28px; font-size: 14px; }
+  .footer-brand span { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.7); }
+  .footer-right { display: flex; align-items: center; gap: 20px; }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; }
+  .footer-links a:hover { color: rgba(255,255,255,0.75); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 28px; }
+    .support-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .guide-sections-grid { grid-template-columns: 1fr; }
+    .hero-steps { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ROLE BAR -->
+<div class="role-bar">
+  You're viewing the <strong>Seller Help Centre</strong>
+  <a href="qwipo-admin-help.html">Switch to Super Admin →</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="logo-mark">Q</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="logo-text"><span>Qwipo</span> Seller Store</span>
+        <span class="logo-pill">Seller</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#videos">Training Videos</a></li>
+      <li><a href="#guide">User Guide</a></li>
+      <li><a href="#faq">FAQs</a></li>
+      <li><a href="#support" class="btn-support">Get Support →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span></span> Seller Onboarding · Phase 1
+    </div>
+    <h1>Get your products <em>live</em> and start receiving orders.</h1>
+    <p>Four short videos, one guide, and quick answers — everything a distributor needs to go from login to live.</p>
+    <div class="hero-ctas">
+      <a href="#videos" class="hero-btn hero-btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Watch Training Videos
+      </a>
+      <a href="#guide" class="hero-btn hero-btn-outline">📄 Download Guide</a>
+    </div>
+    <div class="hero-steps">
+      <div class="hero-step"><div class="hero-step-dot">1</div><span class="hero-step-label">Log In</span></div>
+      <span class="hero-step-arrow">▶</span>
+      <div class="hero-step"><div class="hero-step-dot">2</div><span class="hero-step-label">Upload SKUs</span></div>
+      <span class="hero-step-arrow">▶</span>
+      <div class="hero-step"><div class="hero-step-dot">3</div><span class="hero-step-label">Add Images</span></div>
+      <span class="hero-step-arrow">▶</span>
+      <div class="hero-step"><div class="hero-step-dot">4</div><span class="hero-step-label">Create Schemes</span></div>
+      <span class="hero-step-arrow">▶</span>
+      <div class="hero-step"><div class="hero-step-dot">5</div><span class="hero-step-label">Confirm Orders</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINING VIDEOS -->
+<section class="section" id="videos">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Training Videos</span>
+      <h2 class="section-title">4 videos · ~7 minutes total</h2>
+      <p class="section-subtitle">Watch in order for the smoothest onboarding experience.</p>
+    </div>
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SE-01','Login & Dashboard Walkthrough','Seller Series','')">
+          <span class="video-num-badge">SE-01</span>
+          <span class="video-duration-badge">1:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">Login & Dashboard Walkthrough</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Seller Series · Start Here</div>
+          <div class="video-title">Login & Dashboard Walkthrough</div>
+          <div class="video-desc">Log in with your mobile OTP and get oriented — what each sidebar module does and where to start first.</div>
+          <button class="watch-btn" onclick="openModal('SE-01','Login & Dashboard Walkthrough','Seller Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SE-02','How to Upload Your SKU Catalogue','Seller Series','')">
+          <span class="video-num-badge">SE-02</span>
+          <span class="video-duration-badge">3:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Upload Your SKU Catalogue</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Seller Series · Most Important</div>
+          <div class="video-title">How to Upload Your SKU Catalogue</div>
+          <div class="video-desc">Download the template, fill it right, validate, import, and make your SKUs ONDC-compliant — all 6 steps covered.</div>
+          <button class="watch-btn" onclick="openModal('SE-02','How to Upload Your SKU Catalogue','Seller Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SE-03','How to Create a QPS Pricing Scheme','Seller Series','')">
+          <span class="video-num-badge">SE-03</span>
+          <span class="video-duration-badge">1:30</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Create a QPS Pricing Scheme</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Seller Series</div>
+          <div class="video-title">How to Create a QPS Pricing Scheme</div>
+          <div class="video-desc">Set up quantity-based discounts for your retailers — pricing slabs that auto-calculate customer savings live.</div>
+          <button class="watch-btn" onclick="openModal('SE-03','How to Create a QPS Pricing Scheme','Seller Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SE-04','Confirm Orders & Configure Your Store','Seller Series','')">
+          <span class="video-num-badge">SE-04</span>
+          <span class="video-duration-badge">2:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">Confirm Orders & Configure Your Store</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Seller Series</div>
+          <div class="video-title">Confirm Orders & Configure Your Store</div>
+          <div class="video-desc">Accept incoming orders, set min/max order values, and connect WhatsApp so alerts reach you in real time.</div>
+          <button class="watch-btn" onclick="openModal('SE-04','Confirm Orders & Configure Your Store','Seller Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- USER GUIDE -->
+<section class="section" id="guide">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">User Guide</span>
+      <h2 class="section-title">Keep it on your desk.</h2>
+      <p class="section-subtitle">A concise reference guide covering every module in the Seller Portal.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-header">
+        <div class="guide-icon">🏪</div>
+        <h3>Seller Quick Guide</h3>
+        <p>Step-by-step instructions for every module — SKU upload, orders, schemes, settings, and troubleshooting.</p>
+      </div>
+      <div class="guide-body">
+        <div class="guide-meta">
+          <span class="guide-chip">Phase 1 · v1.1</span>
+          <span class="guide-chip">~3 min read</span>
+          <span class="guide-chip">May 2026</span>
+        </div>
+        <div class="guide-sections-grid">
+          <div class="guide-section-item">Login & Dashboard</div>
+          <div class="guide-section-item">My SKU — 6-step upload</div>
+          <div class="guide-section-item">ONDC Compliance</div>
+          <div class="guide-section-item">Customers (read-only)</div>
+          <div class="guide-section-item">Offers & Schemes (QPS)</div>
+          <div class="guide-section-item">Order Confirmation</div>
+          <div class="guide-section-item">Store Settings</div>
+          <div class="guide-section-item">WhatsApp Notifications</div>
+        </div>
+        <div class="guide-downloads">
+          <a href="Qwipo Seller Store — Seller Quick Guide.docx" download class="dl-btn dl-btn-primary">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download Word Doc <span class="dl-format">.docx</span>
+          </a>
+          <a href="Seller Quick Guide.md" download class="dl-btn dl-btn-outline">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download Markdown <span class="dl-format">.md</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">FAQs</span>
+      <h2 class="section-title">Common seller questions.</h2>
+      <p class="section-subtitle">Quick answers for the most common issues distributors run into.</p>
+    </div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">My SKU rows are failing with "Manufacturer not found." What's wrong?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>The <strong>Manufacturer field must exactly match the Company name</strong> your Super Admin saved — character-by-character, including dots, spaces, and capitalisation. There is no fuzzy matching. Ask your Super Admin for the exact name and copy-paste it directly into the file.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What units are accepted by ONDC?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>Only four units are accepted: <strong>Gram, Kilogram, Litre, and Millilitre.</strong> If your products use Pieces, Pack, or Nos — use <strong>Gram as a temporary workaround.</strong> This ONDC limitation is under review.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">I successfully imported SKUs but buyers still can't see them. Why?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>After import, all SKUs show <strong>"Non-compliant"</strong> because product images are missing. ONDC requires at least one image per SKU before it appears in the buyer app. Run the <strong>sku-image-upload</strong> process — status will flip to <strong>Compliant</strong> once images are uploaded.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">I'm not receiving any orders. What should I check?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>Confirm that your Super Admin has configured <strong>Serviceability</strong> for your account — specifically a Beat Name and Delivery Day for each Company you carry. Without this, orders cannot route to you even if your SKUs are live and compliant.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I change my warehouse address?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p><strong>No.</strong> Your warehouse address is set during Seller profile creation and is permanently locked. If the coordinates are wrong, contact your Super Admin — it requires a database-level correction that cannot be done from the portal.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">The file uploads fine but nothing actually imports. What happened?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>You're using an old or self-made template. <strong>Always download a fresh template</strong> from My SKU → Bulk Import → Download Template before each upload. Column order and validation rules change between releases — reusing old files causes silent failures.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">The dashboard says "Dashboard is on the way." Is something broken?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>No — this is expected in Phase 1. Dashboard analytics are coming in a future release. All five sidebar modules — <strong>My SKU, Customers, Offers & Schemes, Orders, and Settings</strong> — are fully functional today.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What is ONDC and why does it matter for my catalogue?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>ONDC (Open Network for Digital Commerce) is the open protocol connecting your store to buyer apps. For a product to be visible to buyers, it must be <strong>ONDC-compliant</strong> — meaning it needs a product image, valid units (Gram/Kg/Litre/ml), and your store must have Serviceability configured. Non-compliant SKUs are invisible to buyers.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section class="section" id="support">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Get Support</span>
+      <h2 class="section-title">Still stuck? We've got you.</h2>
+      <p class="section-subtitle">Reach out and our onboarding team will help you get live.</p>
+    </div>
+    <div class="support-grid">
+      <a href="https://qwipo.com/support" target="_blank" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.12);">🌐</div>
+        <h4>Support Portal</h4>
+        <p>Submit a ticket, track its status, and browse the full knowledge base.</p>
+        <span class="support-link">Visit Support Portal <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+      <a href="https://wa.me/919900000001?text=Hi%2C%20I%20need%20help%20with%20Qwipo%20Seller%20Store" target="_blank" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.12);">💬</div>
+        <h4>WhatsApp Support</h4>
+        <p>Chat with our onboarding team for quick, real-time help on any issue.</p>
+        <span class="support-link">Chat on WhatsApp <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+      <a href="mailto:support@qwipo.com?subject=Seller%20Store%20-%20Seller%20Support" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.12);">✉️</div>
+        <h4>Email Support</h4>
+        <p>Send a detailed query and we'll respond within one business day.</p>
+        <span class="support-link">Email Us <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-mark" style="background:var(--green)">Q</div>
+      <span>Qwipo Seller Store — Seller Help Centre</span>
+    </div>
+    <div class="footer-right">
+      <div class="footer-links">
+        <a href="#videos">Videos</a>
+        <a href="#guide">Guide</a>
+        <a href="#faq">FAQs</a>
+        <a href="qwipo-admin-help.html">Super Admin →</a>
+      </div>
+      <span class="footer-copy">Phase 1 · v1.1 · May 2026</span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="videoModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-series" id="modalSeries"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-video-wrap" id="modalVideoWrap"></div>
+    <div class="modal-footer"><p>To embed: replace the empty string in <code>openModal()</code> with your YouTube video ID.</p></div>
+  </div>
+</div>
+
+<script>
+  function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+  function openModal(id, title, series, ytId) {
+    document.getElementById('modalTitle').textContent = `${id} — ${title}`;
+    document.getElementById('modalSeries').textContent = series;
+    const wrap = document.getElementById('modalVideoWrap');
+    if (ytId && ytId.length > 5) {
+      wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    } else {
+      wrap.innerHTML = `<div class="modal-coming-soon"><svg width="56" height="56" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M8 5v14l11-7z"/></svg><h3>${id} — ${title}</h3><p>This video is being recorded.<br/>Download the written guide to get started now.</p></div>`;
+    }
+    document.getElementById('videoModal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('videoModal').classList.remove('open');
+    document.getElementById('modalVideoWrap').innerHTML = '';
+  }
+  function closeModalOnOverlay(e) { if (e.target.id === 'videoModal') closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

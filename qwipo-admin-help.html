@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Qwipo Seller Store — Super Admin Help Centre</title>
+<style>
+  :root {
+    --blue:        #0066CC;
+    --blue-dark:   #004EA8;
+    --blue-mid:    #0052A3;
+    --blue-light:  #E8F0FB;
+    --orange:      #FF6600;
+    --orange-light:#FFF3E0;
+    --dark:        #111827;
+    --body:        #374151;
+    --muted:       #6B7280;
+    --border:      #E5E7EB;
+    --bg:          #F9FAFB;
+    --white:       #FFFFFF;
+    --radius:      12px;
+    --shadow:      0 4px 24px rgba(0,0,0,0.08);
+    --shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif; color: var(--body); background: var(--bg); line-height: 1.6; }
+
+  /* ── ROLE BAR ── */
+  .role-bar { background: var(--dark); color: rgba(255,255,255,0.6); text-align: center; padding: 9px 24px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .role-bar strong { color: #93C5FD; }
+  .role-bar a { color: rgba(255,255,255,0.5); font-size: 12px; margin-left: 16px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); padding: 3px 12px; border-radius: 20px; transition: all 0.15s; }
+  .role-bar a:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.4); }
+
+  /* ── NAVBAR ── */
+  .navbar { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 64px; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark { width: 36px; height: 36px; border-radius: 8px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--white); }
+  .logo-text { font-weight: 700; font-size: 16px; color: var(--dark); }
+  .logo-text span { color: var(--blue); }
+  .logo-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: var(--blue-light); color: var(--blue); border: 1px solid rgba(0,102,204,0.2); padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+  .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--body); font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px; transition: all 0.15s; }
+  .nav-links a:hover { background: var(--blue-light); color: var(--blue); }
+  .btn-support { background: var(--orange) !important; color: var(--white) !important; border-radius: 8px !important; font-weight: 600 !important; }
+  .btn-support:hover { background: #E55A00 !important; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, #001F5C 0%, var(--blue-dark) 45%, var(--blue) 100%); color: var(--white); padding: 72px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-content { position: relative; max-width: 680px; margin: 0 auto; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 5px 14px; font-size: 13px; margin-bottom: 20px; }
+  .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: #93C5FD; display: inline-block; }
+  .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.15; margin-bottom: 14px; letter-spacing: -0.5px; }
+  .hero h1 em { font-style: normal; color: #FFB366; }
+  .hero p { font-size: 17px; opacity: 0.88; max-width: 520px; margin: 0 auto 32px; }
+  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-btn { padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+  .hero-btn-primary { background: var(--orange); color: var(--white); }
+  .hero-btn-primary:hover { background: #E55A00; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,102,0,0.4); }
+  .hero-btn-outline { background: rgba(255,255,255,0.12); color: var(--white); border: 1.5px solid rgba(255,255,255,0.4); }
+  .hero-btn-outline:hover { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+
+  /* Flow steps */
+  .flow-steps { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; margin-top: 52px; }
+  .flow-step { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 110px; }
+  .flow-step-num { font-size: 11px; font-weight: 700; color: #93C5FD; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .flow-step-label { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+  .flow-arrow { font-size: 16px; opacity: 0.4; margin: 0 6px; color: white; }
+
+  /* ── SECTION ── */
+  .section { padding: 72px 24px; }
+  .section:nth-child(even) { background: var(--white); }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 48px; }
+  .section-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--blue); background: var(--blue-light); padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
+  .section-title { font-size: 30px; font-weight: 800; color: var(--dark); line-height: 1.2; }
+  .section-subtitle { font-size: 16px; color: var(--muted); margin-top: 8px; }
+
+  /* ── VIDEO GRID ── */
+  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .video-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; transition: all 0.2s; box-shadow: var(--shadow-sm); }
+  .video-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .video-thumb { position: relative; height: 185px; background: linear-gradient(135deg, #001A4D 0%, var(--blue) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 12px; overflow: hidden; }
+  .video-thumb::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%); }
+  .video-num-badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--white); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .video-duration-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.4); color: var(--white); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+  .play-btn { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2.5px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; z-index: 1; }
+  .play-btn svg { fill: white; width: 22px; height: 22px; margin-left: 3px; }
+  .video-thumb:hover .play-btn { background: var(--orange); border-color: var(--orange); transform: scale(1.1); }
+  .video-thumb-title { color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; text-align: center; padding: 0 20px; line-height: 1.35; position: relative; z-index: 1; }
+  .video-body { padding: 18px 20px 20px; }
+  .video-series { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+  .video-title { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 6px; line-height: 1.3; }
+  .video-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+  .watch-btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; background: var(--blue-light); color: var(--blue); font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+  .watch-btn:hover { background: var(--blue); color: var(--white); }
+  .watch-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* Warning badge on critical video */
+  .critical-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; background: #FFF3E0; color: var(--orange); border: 1px solid rgba(255,102,0,0.3); padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.82); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--dark); border-radius: 14px; overflow: hidden; width: 90%; max-width: 860px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .modal-title { font-size: 15px; font-weight: 600; color: var(--white); }
+  .modal-series { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); border: none; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .modal-close:hover { background: rgba(255,255,255,0.2); }
+  .modal-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+  .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+  .modal-coming-soon { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: linear-gradient(135deg, #001A4D, var(--blue)); }
+  .modal-coming-soon h3 { color: white; font-size: 20px; font-weight: 700; }
+  .modal-coming-soon p { color: rgba(255,255,255,0.65); font-size: 14px; text-align: center; padding: 0 40px; line-height: 1.6; }
+  .modal-footer { padding: 12px 20px; }
+  .modal-footer p { font-size: 12px; color: rgba(255,255,255,0.35); }
+  .modal-footer code { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 4px; }
+
+  /* ── GUIDE CARD ── */
+  .guide-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow-sm); max-width: 680px; margin: 0 auto; }
+  .guide-header { padding: 32px 32px 24px; background: linear-gradient(135deg, #001A4D, var(--blue)); }
+  .guide-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 16px; }
+  .guide-header h3 { font-size: 22px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .guide-header p { font-size: 14px; color: rgba(255,255,255,0.75); }
+  .guide-body { padding: 24px 32px 28px; }
+  .guide-meta { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .guide-chip { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; }
+  .guide-sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+  .guide-section-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); background: var(--blue-light); border-radius: 8px; padding: 8px 12px; }
+  .guide-section-item::before { content: '✓'; font-weight: 700; color: var(--blue); font-size: 12px; flex-shrink: 0; }
+  .guide-downloads { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dl-btn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.15s; }
+  .dl-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .dl-btn-primary { background: var(--blue); color: white; }
+  .dl-btn-primary:hover { background: var(--blue-dark); }
+  .dl-btn-outline { background: var(--bg); color: var(--body); border: 1px solid var(--border); }
+  .dl-btn-outline:hover { background: var(--border); }
+  .dl-format { font-size: 11px; opacity: 0.6; font-weight: 400; }
+
+  /* ── FAQ ── */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; max-width: 760px; margin: 0 auto; }
+  .faq-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .faq-item.open { border-color: var(--blue); }
+  .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; gap: 12px; }
+  .faq-q-text { font-size: 15px; font-weight: 600; color: var(--dark); line-height: 1.35; }
+  .faq-toggle { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .faq-item.open .faq-toggle { background: var(--blue); border-color: var(--blue); transform: rotate(45deg); }
+  .faq-toggle svg { width: 14px; height: 14px; fill: var(--muted); }
+  .faq-item.open .faq-toggle svg { fill: white; }
+  .faq-a { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+  .faq-item.open .faq-a { max-height: 320px; padding: 0 20px 18px; }
+  .faq-a p { font-size: 14px; color: var(--body); line-height: 1.65; }
+  .faq-a strong { color: var(--dark); }
+
+  /* Warning inset */
+  .warn-inset { background: #FFF8E1; border-left: 3px solid var(--orange); border-radius: 0 6px 6px 0; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #7B4F00; }
+  .warn-inset strong { color: #7B4F00; }
+
+  /* ── CONSTRAINTS CALLOUT ── */
+  .constraints-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 860px; margin: 0 auto 0; }
+  .constraint-card { border-radius: 10px; padding: 20px 22px; }
+  .constraint-card.permanent { background: #FFF8E1; border: 1px solid rgba(255,102,0,0.25); }
+  .constraint-card.editable { background: #E8F5EE; border: 1px solid rgba(27,138,76,0.25); }
+  .constraint-card h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .constraint-card.permanent h4 { color: #B45309; }
+  .constraint-card.editable h4 { color: #1B8A4C; }
+  .constraint-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .constraint-list li { font-size: 13px; color: var(--body); display: flex; align-items: flex-start; gap: 7px; }
+  .constraint-list li::before { flex-shrink: 0; margin-top: 1px; }
+  .constraint-card.permanent .constraint-list li::before { content: '✕'; color: var(--orange); font-weight: 700; font-size: 12px; }
+  .constraint-card.editable .constraint-list li::before { content: '✓'; color: #1B8A4C; font-weight: 700; font-size: 12px; }
+
+  /* ── SUPPORT ── */
+  #support { background: linear-gradient(135deg, #001A4D 0%, var(--blue-dark) 100%); }
+  #support .section-label { color: #93C5FD; background: rgba(147,197,253,0.15); }
+  #support .section-title { color: var(--white); }
+  #support .section-subtitle { color: rgba(255,255,255,0.65); }
+  .support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 840px; margin: 0 auto; }
+  .support-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 28px 24px; text-align: center; transition: all 0.2s; text-decoration: none; display: block; }
+  .support-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+  .support-icon { width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .support-card h4 { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .support-card p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; margin-bottom: 16px; }
+  .support-link { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #93C5FD; }
+  .support-link svg { width: 14px; height: 14px; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--dark); padding: 28px 24px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-brand .logo-mark { width: 28px; height: 28px; font-size: 14px; }
+  .footer-brand span { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.7); }
+  .footer-right { display: flex; align-items: center; gap: 20px; }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; }
+  .footer-links a:hover { color: rgba(255,255,255,0.75); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 28px; }
+    .support-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .guide-sections-grid { grid-template-columns: 1fr; }
+    .constraints-grid { grid-template-columns: 1fr; }
+    .flow-steps { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ROLE BAR -->
+<div class="role-bar">
+  You're viewing the <strong>Super Admin Help Centre</strong>
+  <a href="qwipo-seller-help.html">Switch to Seller →</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="logo-mark">Q</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="logo-text"><span>Qwipo</span> Seller Store</span>
+        <span class="logo-pill">Super Admin</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#videos">Training Videos</a></li>
+      <li><a href="#guide">User Guide</a></li>
+      <li><a href="#constraints">Key Constraints</a></li>
+      <li><a href="#faq">FAQs</a></li>
+      <li><a href="#support" class="btn-support">Get Support →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span></span> Super Admin · Phase 1 Onboarding
+    </div>
+    <h1>Set up every distributor <em>right</em> the first time.</h1>
+    <p>Five focused videos and a reference guide covering the complete distributor setup flow — from company creation to the first live order.</p>
+    <div class="hero-ctas">
+      <a href="#videos" class="hero-btn hero-btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Watch Training Videos
+      </a>
+      <a href="#guide" class="hero-btn hero-btn-outline">📄 Download Guide</a>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="flow-step-num">Step 1</div><div class="flow-step-label">Create Company & Brands</div></div>
+      <span class="flow-arrow">▶</span>
+      <div class="flow-step"><div class="flow-step-num">Step 2</div><div class="flow-step-label">Create Seller Profile</div></div>
+      <span class="flow-arrow">▶</span>
+      <div class="flow-step"><div class="flow-step-num">Step 3</div><div class="flow-step-label">Map Companies & Brands</div></div>
+      <span class="flow-arrow">▶</span>
+      <div class="flow-step"><div class="flow-step-num">Step 4</div><div class="flow-step-label">Configure Serviceability</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINING VIDEOS -->
+<section class="section" id="videos">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Training Videos</span>
+      <h2 class="section-title">5 videos · ~10 minutes total</h2>
+      <p class="section-subtitle">Watch in order — each step depends on the one before it.</p>
+    </div>
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SA-01','Platform Overview & Setup Order','Super Admin Series','')">
+          <span class="video-num-badge">SA-01</span>
+          <span class="video-duration-badge">1:30</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">Platform Overview & Setup Order</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Super Admin Series · Start Here</div>
+          <div class="video-title">Platform Overview & Setup Order</div>
+          <div class="video-desc">Understand the 5-step dependency chain and why skipping even one step causes downstream failures that look like system bugs.</div>
+          <button class="watch-btn" onclick="openModal('SA-01','Platform Overview & Setup Order','Super Admin Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SA-02','How to Add a Company & Brands','Super Admin Series','')">
+          <span class="video-num-badge">SA-02</span>
+          <span class="video-duration-badge">2:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Add a Company & Brands</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Super Admin Series <span class="critical-badge">⚠ Critical</span></div>
+          <div class="video-title">How to Add a Company & Brands</div>
+          <div class="video-desc">Create a manufacturer entity and its brand list. Company names are permanent — a typo here will block every future SKU upload.</div>
+          <button class="watch-btn" onclick="openModal('SA-02','How to Add a Company & Brands','Super Admin Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SA-03','How to Create a Seller Profile','Super Admin Series','')">
+          <span class="video-num-badge">SA-03</span>
+          <span class="video-duration-badge">2:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Create a Seller Profile</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Super Admin Series <span class="critical-badge">⚠ Critical</span></div>
+          <div class="video-title">How to Create a Seller Profile</div>
+          <div class="video-desc">Set up a distributor with the correct mobile, GST, and Lat/Long — the coordinates become their permanent warehouse and cannot be changed.</div>
+          <button class="watch-btn" onclick="openModal('SA-03','How to Create a Seller Profile','Super Admin Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SA-04','How to Map Companies & Brands','Super Admin Series','')">
+          <span class="video-num-badge">SA-04</span>
+          <span class="video-duration-badge">1:30</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Map Companies & Brands to a Seller</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Super Admin Series</div>
+          <div class="video-title">How to Map Companies & Brands</div>
+          <div class="video-desc">Link the right brands to a seller — and choose deliberately between All Brands (auto-expanding) vs Specific Brands (manual updates).</div>
+          <button class="watch-btn" onclick="openModal('SA-04','How to Map Companies & Brands','Super Admin Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" onclick="openModal('SA-05','How to Configure Serviceability','Super Admin Series','')">
+          <span class="video-num-badge">SA-05</span>
+          <span class="video-duration-badge">2:00</span>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="video-thumb-title">How to Configure Serviceability</div>
+        </div>
+        <div class="video-body">
+          <div class="video-series">Super Admin Series</div>
+          <div class="video-title">How to Configure Serviceability</div>
+          <div class="video-desc">Set delivery beats and days per company. Without this, a seller's catalogue can be perfect and orders will still never arrive.</div>
+          <button class="watch-btn" onclick="openModal('SA-05','How to Configure Serviceability','Super Admin Series','')">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Video
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- USER GUIDE -->
+<section class="section" id="guide">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">User Guide</span>
+      <h2 class="section-title">Your reference for every setup.</h2>
+      <p class="section-subtitle">A step-by-step guide with field references, constraints, and a go-live checklist.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-header">
+        <div class="guide-icon">🔧</div>
+        <h3>Super Admin Quick Guide</h3>
+        <p>End-to-end distributor setup — company creation, seller profile, mapping, serviceability, and verification checklist.</p>
+      </div>
+      <div class="guide-body">
+        <div class="guide-meta">
+          <span class="guide-chip">Phase 1 · v1.0</span>
+          <span class="guide-chip">~3 min read</span>
+          <span class="guide-chip">May 2026</span>
+        </div>
+        <div class="guide-sections-grid">
+          <div class="guide-section-item">End-to-end setup order</div>
+          <div class="guide-section-item">Company naming rules</div>
+          <div class="guide-section-item">Create Seller + Lat/Long</div>
+          <div class="guide-section-item">All Brands vs Specific Brands</div>
+          <div class="guide-section-item">Serviceability per Company</div>
+          <div class="guide-section-item">Key constraints reference</div>
+          <div class="guide-section-item">Go-live verification checklist</div>
+          <div class="guide-section-item">Troubleshooting table</div>
+        </div>
+        <div class="guide-downloads">
+          <a href="Qwipo Seller Store — Super Admin Quick Guide.docx" download class="dl-btn dl-btn-primary">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download Word Doc <span class="dl-format">.docx</span>
+          </a>
+          <a href="Super Admin Quick Guide.md" download class="dl-btn dl-btn-outline">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download Markdown <span class="dl-format">.md</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEY CONSTRAINTS -->
+<section class="section" id="constraints">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Key Constraints</span>
+      <h2 class="section-title">Know what's permanent before you click.</h2>
+      <p class="section-subtitle">Some fields are locked forever after saving. No UI-level edits — database fix only.</p>
+    </div>
+    <div class="constraints-grid">
+      <div class="constraint-card permanent">
+        <h4>🔒 Cannot change after saving</h4>
+        <ul class="constraint-list">
+          <li>Company Name — typo = permanent, blocks all SKU uploads</li>
+          <li>Brand Name — can only add, never remove</li>
+          <li>Seller Lat/Long (warehouse coordinates)</li>
+          <li>Seller Mobile Number (used for OTP login)</li>
+        </ul>
+      </div>
+      <div class="constraint-card editable">
+        <h4>✏️ Can add or extend later</h4>
+        <ul class="constraint-list">
+          <li>New brands under an existing Company</li>
+          <li>New Companies mapped to a Seller</li>
+          <li>Additional brands mapped to a Seller</li>
+          <li>New Serviceability beats and polygons</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">FAQs</span>
+      <h2 class="section-title">Common admin questions.</h2>
+      <p class="section-subtitle">Quick answers before you make an irreversible change.</p>
+    </div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I edit a Company name after saving it?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a">
+          <p><strong>No.</strong> Company names cannot be edited through the UI after creation. A typo is permanent unless fixed at the database level by the engineering team. Always confirm the exact legal entity name — and spelling — before clicking Create.</p>
+          <div class="warn-inset">⚠ The Company Name is used character-by-character in every seller's SKU upload file. A single dot or space difference causes every row referencing that manufacturer to fail.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I remove a brand from a Company?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p><strong>No.</strong> Brands can only be added, never removed. You can add new brands to a Company at any time, but existing ones cannot be deleted. Confirm the full brand list with the seller before creating the Company to avoid polluting the dropdown.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What happens if I enter the wrong Lat/Long for a seller?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a">
+          <p>The Lat/Long coordinates become the seller's warehouse and are permanently locked after saving. They determine the centre of every serviceability beat and the origin of every dispatch. The seller cannot change them from their portal.</p>
+          <div class="warn-inset">⚠ Always capture coordinates from Google Maps at the seller's actual godown or dispatch point — not a generic city centre. Incorrect coordinates require a database-level fix.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Is Serviceability mandatory before a seller can receive orders?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p><strong>Yes, absolutely.</strong> A Beat Name and Delivery Day must be configured for each Company the seller carries. Without it, orders cannot route to that seller regardless of how many SKUs they have. The GeoJSON polygon can be added later — but beat name and delivery day are required at setup.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What's the difference between "All Brands" and "Specific Brands" mapping?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p><strong>"All Brands"</strong> gives the seller every current and future brand of that Company automatically — new brands added later flow in with zero action required. <strong>"Specific Brands"</strong> requires manual selection, and any brand added to the Company later will NOT appear for that seller until you manually add it. Choose based on whether the distributor carries the full company line or a subset.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can two sellers have overlapping serviceability polygons?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p><strong>Yes</strong> — overlapping polygons are permitted in Phase 1. It is an operational decision, not a system constraint. Multiple sellers can cover the same territory; the routing logic will handle which seller receives a given order.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">I see a duplicate Company in the list. What should I do?</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>Do not map any new sellers to the duplicate. Escalate to the engineering team for a database-level cleanup. A duplicate Company name causes a permanent data fork — sellers mapped to the duplicate won't see SKUs that referenced the original, and there is no UI-level merge tool.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">The seller's SKU upload keeps failing with "Manufacturer not found" even though the Company exists.</span>
+          <div class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="faq-a"><p>Compare the exact Company name in Super Admin with what the seller has typed in the Manufacturer column of their SKU file — character by character. Check for trailing spaces, different capitalisation, or abbreviation differences (e.g. "Pvt. Ltd." vs "PVT LTD"). The match must be exact; there is no fuzzy matching.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section class="section" id="support">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Get Support</span>
+      <h2 class="section-title">Need engineering-level help?</h2>
+      <p class="section-subtitle">For database fixes and escalations, reach out directly.</p>
+    </div>
+    <div class="support-grid">
+      <a href="https://qwipo.com/support" target="_blank" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.1);">🌐</div>
+        <h4>Support Portal</h4>
+        <p>Submit tickets for database-level fixes — Company name corrections, Lat/Long updates, duplicate cleanup.</p>
+        <span class="support-link">Visit Support Portal <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+      <a href="https://wa.me/919900000001?text=Hi%2C%20Super%20Admin%20needs%20help%20with%20Qwipo%20Seller%20Store" target="_blank" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.1);">💬</div>
+        <h4>WhatsApp Support</h4>
+        <p>Chat with the onboarding team for quick guidance on setup flows and escalations.</p>
+        <span class="support-link">Chat on WhatsApp <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+      <a href="mailto:support@qwipo.com?subject=Super%20Admin%20Escalation%20-%20Seller%20Store" class="support-card">
+        <div class="support-icon" style="background:rgba(255,255,255,0.1);">✉️</div>
+        <h4>Email Escalation</h4>
+        <p>Send escalations for database corrections — include the affected Company or Seller name.</p>
+        <span class="support-link">Email Us <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-mark">Q</div>
+      <span>Qwipo Seller Store — Super Admin Help Centre</span>
+    </div>
+    <div class="footer-right">
+      <div class="footer-links">
+        <a href="#videos">Videos</a>
+        <a href="#guide">Guide</a>
+        <a href="#constraints">Constraints</a>
+        <a href="#faq">FAQs</a>
+        <a href="qwipo-seller-help.html">Seller Help →</a>
+      </div>
+      <span class="footer-copy">Phase 1 · v1.0 · May 2026</span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="videoModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-series" id="modalSeries"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-video-wrap" id="modalVideoWrap"></div>
+    <div class="modal-footer"><p>To embed: replace the empty string in <code>openModal()</code> with your YouTube video ID.</p></div>
+  </div>
+</div>
+
+<script>
+  function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+  function openModal(id, title, series, ytId) {
+    document.getElementById('modalTitle').textContent = `${id} — ${title}`;
+    document.getElementById('modalSeries').textContent = series;
+    const wrap = document.getElementById('modalVideoWrap');
+    if (ytId && ytId.length > 5) {
+      wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    } else {
+      wrap.innerHTML = `<div class="modal-coming-soon"><svg width="56" height="56" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M8 5v14l11-7z"/></svg><h3>${id} — ${title}</h3><p>This video is being recorded.<br/>Download the written guide to get started now.</p></div>`;
+    }
+    document.getElementById('videoModal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('videoModal').classList.remove('open');
+    document.getElementById('modalVideoWrap').innerHTML = '';
+  }
+  function closeModalOnOverlay(e) { if (e.target.id === 'videoModal') closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
